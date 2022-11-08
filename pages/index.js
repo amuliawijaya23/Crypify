@@ -1,10 +1,9 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import { Box, Typography } from '@mui/material';
 
 export default function Home() {
   return (
-    <div className={styles.container}>
-    </div>
+    <Box sx={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'}}>
+
+    </Box>
   )
 }
