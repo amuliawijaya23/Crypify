@@ -22,7 +22,6 @@ import {
 import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SearchIcon from '@mui/icons-material/Search';
-import TokenIcon from '@mui/icons-material/Token';
 import StarIcon from '@mui/icons-material/Star';
 
 // redux
