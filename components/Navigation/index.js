@@ -27,6 +27,9 @@ import StarIcon from '@mui/icons-material/Star';
 // redux
 import { useSelector } from 'react-redux';
 
+// NEXT router
+import { useRouter } from 'next/router';
+
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
@@ -136,11 +139,15 @@ const NavDrawer = styled(Drawer, {
 }));
 
 export const Navigation = () => {
+  // set router
+  const router = useRouter();
   // Global state
 	const user = useSelector((state) => state.user.value.data);
 
   // local state
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState(false);
+  const [address, setAddress] = useState('');
 
   // style based on open state
   const buttonStyle = {
@@ -164,10 +171,38 @@ export const Navigation = () => {
 		setOpen(false);
 	};
 
+  const handleSearchOpen = () => {
+    setSearch(true);
+  };
+
+  const handleSearchClose = () => {
+    setSearch(false);
+  };
+
   return (
     <>
       <NavBar position='fixed' open={open}>
 				<Toolbar>
+          {search && (
+            <Search sx={{ minWidth: 300 }}>
+						  <SearchIconWrapper>
+							  <SearchIcon />
+						  </SearchIconWrapper>
+						  <StyledInputBase
+							  fullWidth
+							  placeholder='Search Pair…'
+							  inputProps={{ 'aria-label': 'search' }}
+							  value={address}
+							  onChange={(e) => setAddress(e.target.value)}
+							  onKeyDown={(e) => {
+								  if (e.key === 'Enter') {
+									  router.push(`/token/${search}`);
+									  setAddress('');
+								  }
+							  }}
+						  />
+					  </Search>)
+            }
 				</Toolbar>
 			</NavBar>
 			<NavDrawer
@@ -187,11 +222,11 @@ export const Navigation = () => {
 				</DrawerHeader>
 				<Divider />
 				<List>
-					{['Token', 'Favorites'].map((text, index) => {
+					{['Search', 'Favorites'].map((text, index) => {
 						const clickHandler = () => {
 							switch (index) {
 								case 0:
-									console.log('test')
+									search ? handleSearchClose() : handleSearchOpen();
 									break;
 								case 1:
 									console.log('test2');
@@ -207,7 +242,7 @@ export const Navigation = () => {
 										{(() => {
 											switch (index) {
 												case 0:
-													return <TokenIcon />;
+													return <SearchIcon />;
 												case 1:
 													return <StarIcon />;
 												default:
