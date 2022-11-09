@@ -14,7 +14,8 @@ import {
 	ListItemText,
 	Divider,
 	InputBase,
-	Button
+	Button,
+  ClickAwayListener
 } from '@mui/material';
 
 // import from material icons
@@ -184,25 +185,27 @@ export const Navigation = () => {
       <NavBar position='fixed' open={open}>
 				<Toolbar>
           {search && (
-            <Search sx={{ minWidth: 300 }}>
-						  <SearchIconWrapper>
-							  <SearchIcon />
-						  </SearchIconWrapper>
-						  <StyledInputBase
-							  fullWidth
-							  placeholder='Search Pair…'
-							  inputProps={{ 'aria-label': 'search' }}
-							  value={address}
-							  onChange={(e) => setAddress(e.target.value)}
-							  onKeyDown={(e) => {
-								  if (e.key === 'Enter') {
-									  router.push(`/token/${search}`);
-									  setAddress('');
-								  }
-							  }}
-						  />
-					  </Search>)
-            }
+            <ClickAwayListener onClickAway={handleSearchClose}>
+              <Search sx={{ minWidth: 300 }}>
+						    <SearchIconWrapper>
+							    <SearchIcon />
+						    </SearchIconWrapper>
+						    <StyledInputBase
+							    fullWidth
+							    placeholder='Search Pair…'
+							    inputProps={{ 'aria-label': 'search' }}
+							    value={address}
+							    onChange={(e) => setAddress(e.target.value)}
+							    onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      router.push(`/token/${address}`);
+									    setAddress('');
+								    }
+							    }}
+                  />
+					    </Search>
+            </ClickAwayListener>
+          )}
 				</Toolbar>
 			</NavBar>
 			<NavDrawer
