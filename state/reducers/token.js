@@ -1,18 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  value: {}
+  profile: {},
+  transfers: null
 };
 
 export const tokenSlice = createSlice({
   name: 'token',
   initialState: initialState,
   reducers: {
-    setToken: (state, action) => {
-      state.value = action.payload;
+    setTokenProfile: (state, action) => {
+      state.profile = action.payload;
+    },
+    setTokenTransfers: (state, action) => {
+      state.transfers = action.payload;
     }
   }
 });
 
-export const { setToken } = tokenSlice.actions;
+export const { setTokenProfile, setTokenTransfers } = tokenSlice.actions;
 export default tokenSlice.reducer;

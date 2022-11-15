@@ -13,7 +13,7 @@ import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 
 // reducers
-import { setToken } from '../state/reducers/token';
+import { setTokenProfile, setTokenTransfers } from '../state/reducers/token';
 
 // import from Date-fns
 import startOfDay from 'date-fns/startOfDay';
@@ -39,6 +39,7 @@ export const useTokenData = () => {
 
   const getTokenData = useCallback(async (token) => {
     try {
+      // get token abi from etherscan
       const { data } = await axios.post('/api/token/abi', { address: token });
 
       const tokenContract = new ethers.Contract(token, data, provider);
@@ -55,12 +56,13 @@ export const useTokenData = () => {
         totalSupply: await totalSupply.toString(),
         owner: await tokenContract.owner()
       };
-      // console.log('token info', tokenInfo);
+
+      dispatch(setTokenProfile(tokenInfo));
 
     } catch (error) {
       console.error(error.response ? error.response.body : error);
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (address) {
@@ -69,6 +71,6 @@ export const useTokenData = () => {
   }, [address, getTokenData]);
 
   return {
-    address
+    
   };
 };
