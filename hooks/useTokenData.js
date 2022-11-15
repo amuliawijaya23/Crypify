@@ -1,4 +1,7 @@
-import { useCallback } from 'react';
+import axios from 'axios';
+
+// import react hooks
+import { useCallback, useEffect } from 'react';
 
 // import ethers js
 import { ethers } from 'ethers';
@@ -20,6 +23,12 @@ import getUnixTime from 'date-fns/getUnixTime';
 const defaultStart = startOfDay(new Date());
 const defaultEnd = new Date();
 
+// variables
+const INFURA_URL = process.env.NEXT_PUBLIC_INFURA_URL;
+
+// ethers provider
+const provider = new ethers.providers.JsonRpcProvider(INFURA_URL);
+
 export const useTokenData = () => {
   // set up router
   const router = useRouter();
@@ -28,13 +37,22 @@ export const useTokenData = () => {
 
   const dispatch = useDispatch();
 
-  const getTokenData = useCallback(async () => {
+  const getTokenData = useCallback(async (token) => {
     try {
-      
+      const { data } = await axios.post('/api/token/abi', { address: token });
+
+      const tokenContract = new ethers.Contract(token, data, provider);
+
     } catch (error) {
       console.error(error.response ? error.response.body : error);
     }
   }, []);
+
+  useEffect(() => {
+    if (address) {
+      getTokenData(address)
+    }
+  }, [address]);
 
   return {
     address
