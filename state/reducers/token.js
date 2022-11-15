@@ -1,8 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+// import from Date-fns
+import startOfDay from 'date-fns/startOfDay';
+import getUnixTime from 'date-fns/getUnixTime';
+
 const initialState = {
   profile: {},
-  transfers: null
+  transfers: {
+    start: getUnixTime(startOfDay(new Date())),
+    end: getUnixTime(new Date()),
+    data: []
+  }
 };
 
 export const tokenSlice = createSlice({
@@ -12,11 +20,17 @@ export const tokenSlice = createSlice({
     setTokenProfile: (state, action) => {
       state.profile = action.payload;
     },
-    setTokenTransfers: (state, action) => {
-      state.transfers = action.payload;
-    }
+    setTransfersStartDate: (state, action) => {
+      state.transfers.start = action.payload;
+    },
+    setTransfersEndDate: (state, action) => {
+      state.transfers.end = action.payload;
+    },
+    setTransfersData: (state, action) => {
+      state.transfers.data = action.payload;
+    },
   }
 });
 
-export const { setTokenProfile, setTokenTransfers } = tokenSlice.actions;
+export const { setTokenProfile, setTransfersStartDate, setTransfersEndDate, setTransfersData } = tokenSlice.actions;
 export default tokenSlice.reducer;

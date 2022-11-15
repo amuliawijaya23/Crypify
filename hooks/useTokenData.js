@@ -3,6 +3,9 @@ import axios from 'axios';
 // import react hooks
 import { useCallback, useEffect } from 'react';
 
+// import from Date-fns
+import getUnixTime from 'date-fns/getUnixTime';
+
 // import ethers js
 import { ethers } from 'ethers';
 
@@ -13,15 +16,7 @@ import { useRouter } from 'next/router';
 import { useDispatch } from 'react-redux';
 
 // reducers
-import { setTokenProfile, setTokenTransfers } from '../state/reducers/token';
-
-// import from Date-fns
-import startOfDay from 'date-fns/startOfDay';
-import getUnixTime from 'date-fns/getUnixTime';
-
-// set default start and end date for transactions query
-const defaultStart = startOfDay(new Date());
-const defaultEnd = new Date();
+import { setTokenProfile, setTransfersStartDate, setTransfersEndDate, setTransfersData } from '../state/reducers/token';
 
 // variables
 const INFURA_URL = process.env.NEXT_PUBLIC_INFURA_URL;
@@ -64,13 +59,28 @@ export const useTokenData = () => {
     }
   }, [dispatch]);
 
+  const getTokenTransfers = useCallback(async () => {
+
+  }, []);
+
   useEffect(() => {
     if (address) {
       getTokenData(address)
     }
   }, [address, getTokenData]);
 
+  const setStart = (input) => {
+    const newStart = getUnixTime(input);
+    dispatch(setTransfersStartDate(newStart));
+  };
+
+  const setEnd = (input) => {
+    const newEnd = getUnixTime(input);
+    dispatch(setTransfersEndDate(newEnd));
+  };
+
   return {
-    
+    setStart,
+    setEnd
   };
 };
