@@ -1,8 +1,26 @@
+// import from MUI
 import { Box, Grid } from '@mui/material';
 
+// import custom components
+import Loading from '../../components/Loading';
+
+// import custom hook
+import { useTokenData } from '../../hooks/useTokenData';
+
+
+
 const Token = () => {
+  const { } = useTokenData();
+
+
   return (
-    <div>Token</div>
+    <>
+      <Box component='main' sx={{ width: '100%' }}>
+        <Grid container spacing={3}>
+            
+        </Grid>
+      </Box>
+    </>
   )
 }
 
