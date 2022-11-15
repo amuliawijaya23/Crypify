@@ -43,8 +43,19 @@ export const useTokenData = () => {
 
       const tokenContract = new ethers.Contract(token, data, provider);
 
-      console.log('contract', tokenContract);
-      console.log('trans owner', await tokenContract.devWallet());
+      // console.log('contract', tokenContract);
+      const totalSupply = await tokenContract.totalSupply();
+
+      const tokenInfo = {
+        address: token,
+        pair: await tokenContract.uniswapV2Pair(),
+        name: await tokenContract.name(),
+        symbol: await tokenContract.symbol(),
+        decimals: await tokenContract.decimals(),
+        totalSupply: await totalSupply.toString(),
+        owner: await tokenContract.owner()
+      };
+      // console.log('token info', tokenInfo);
 
     } catch (error) {
       console.error(error.response ? error.response.body : error);
