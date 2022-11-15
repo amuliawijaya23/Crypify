@@ -43,6 +43,9 @@ export const useTokenData = () => {
 
       const tokenContract = new ethers.Contract(token, data, provider);
 
+      console.log('contract', tokenContract);
+      console.log('trans owner', await tokenContract.devWallet());
+
     } catch (error) {
       console.error(error.response ? error.response.body : error);
     }
@@ -52,7 +55,7 @@ export const useTokenData = () => {
     if (address) {
       getTokenData(address)
     }
-  }, [address]);
+  }, [address, getTokenData]);
 
   return {
     address
