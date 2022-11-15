@@ -32,6 +32,52 @@ export const useTokenData = () => {
 
   const dispatch = useDispatch();
 
+  const setStart = (input) => {
+    const newStart = getUnixTime(input);
+    dispatch(setTransfersStartDate(newStart));
+  };
+
+  const setEnd = (input) => {
+    const newEnd = getUnixTime(input);
+    dispatch(setTransfersEndDate(newEnd));
+  };
+
+  const getTokenTransfers = async (token, decimals, start, end) => {
+    try {
+      const abi = [
+        "event Transfer(address indexed from, address indexed to, uint amount)"
+      ];
+
+      const { data } = await axios.post('/api/block', {start: start, end: end});
+  
+      const contract = new ethers.Contract(token, abi, provider);
+  
+      const filterAll = contract.filters.Transfer();
+      const transfers = await contract.queryFilter(filterAll, data.start, data.end);
+
+      const aggregateTransfers = await Promise.all(transfers.map(async(t) => (
+        {
+          blockNumber: t.blockNumber,
+          logIndex: t.logIndex,
+          transactionHash: t.transactionHash,
+          from: t.args.from,
+          to: t.args.to,
+          amount: ethers.utils.formatUnits(t.args.amount.toString(), decimals),
+          timestamp: await (async () => (await t.getBlock()).timestamp)()
+        }
+      )));
+      
+      dispatch(setTransfersData(aggregateTransfers.sort((a, b) => b.timestamp - a.timestamp)));
+
+    } catch (error) {
+      console.error(error.response ? error.response.body : error);
+    };
+  };
+
+  // const getTokenTransfers = useCallback(async () => {
+
+  // }, []);
+
   const getTokenData = useCallback(async (token) => {
     try {
       // get token abi from etherscan
@@ -59,25 +105,11 @@ export const useTokenData = () => {
     }
   }, [dispatch]);
 
-  const getTokenTransfers = useCallback(async () => {
-
-  }, []);
-
   useEffect(() => {
     if (address) {
       getTokenData(address)
     }
   }, [address, getTokenData]);
-
-  const setStart = (input) => {
-    const newStart = getUnixTime(input);
-    dispatch(setTransfersStartDate(newStart));
-  };
-
-  const setEnd = (input) => {
-    const newEnd = getUnixTime(input);
-    dispatch(setTransfersEndDate(newEnd));
-  };
 
   return {
     setStart,
