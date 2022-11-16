@@ -7,8 +7,8 @@ import getUnixTime from 'date-fns/getUnixTime';
 const initialState = {
   profile: {},
   transfers: {
-    start: getUnixTime(startOfDay(new Date())),
-    end: getUnixTime(new Date()),
+    start: null,
+    end: null,
     data: []
   }
 };

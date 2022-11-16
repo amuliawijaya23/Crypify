@@ -11,13 +11,10 @@ import { useTokenData } from '../../hooks/useTokenData';
 import { useSelector } from 'react-redux';
 
 const Token = () => {
-  const { } = useTokenData();
+  const { setStart, setEnd, getTokenTransfers } = useTokenData();
 
   // global state
   const token = useSelector((state) => state.token);
-
-  console.log('token', token);
-
 
   return (
     <>
