@@ -5,6 +5,7 @@ import { useCallback, useEffect } from 'react';
 
 // import from Date-fns
 import getUnixTime from 'date-fns/getUnixTime';
+import startOfDay from 'date-fns/startOfDay';
 
 // import ethers js
 import { ethers } from 'ethers';
@@ -42,7 +43,11 @@ export const useTokenData = () => {
     dispatch(setTransfersEndDate(newEnd));
   };
 
-  const getTokenTransfers = async (token, decimals, start, end) => {
+  // const getTokenTransfers = async (token, decimals, start, end) => {
+    
+  // };
+
+  const getTokenTransfers = useCallback(async (token, decimals, start, end) => {
     try {
       const abi = [
         "event Transfer(address indexed from, address indexed to, uint amount)"
@@ -55,7 +60,7 @@ export const useTokenData = () => {
       const filterAll = contract.filters.Transfer();
       const transfers = await contract.queryFilter(filterAll, data.start, data.end);
 
-      const aggregateTransfers = await Promise.all(transfers.map(async(t) => (
+      const aggregatedTransfers = await Promise.all(transfers.map(async(t) => (
         {
           blockNumber: t.blockNumber,
           logIndex: t.logIndex,
@@ -66,17 +71,13 @@ export const useTokenData = () => {
           timestamp: await (async () => (await t.getBlock()).timestamp)()
         }
       )));
-      
-      dispatch(setTransfersData(aggregateTransfers.sort((a, b) => b.timestamp - a.timestamp)));
+
+      dispatch(setTransfersData(aggregatedTransfers.sort((a, b) => b.timestamp - a.timestamp)));
 
     } catch (error) {
       console.error(error.response ? error.response.body : error);
     };
-  };
-
-  // const getTokenTransfers = useCallback(async () => {
-
-  // }, []);
+  }, [dispatch]);
 
   const getTokenData = useCallback(async (token) => {
     try {
@@ -87,32 +88,40 @@ export const useTokenData = () => {
 
       // console.log('contract', tokenContract);
       const totalSupply = await tokenContract.totalSupply();
+      const decimals = await tokenContract.decimals();
 
       const tokenInfo = {
         address: token,
         pair: await tokenContract.uniswapV2Pair(),
         name: await tokenContract.name(),
         symbol: await tokenContract.symbol(),
-        decimals: await tokenContract.decimals(),
+        decimals: decimals,
         totalSupply: await totalSupply.toString(),
         owner: await tokenContract.owner()
       };
 
       dispatch(setTokenProfile(tokenInfo));
 
+      const start = getUnixTime(startOfDay(new Date()));
+      const end = getUnixTime(new Date());
+
+      await getTokenTransfers(token, decimals, start, end);
+
     } catch (error) {
       console.error(error.response ? error.response.body : error);
     }
-  }, [dispatch]);
+  }, [dispatch, getTokenTransfers]);
 
   useEffect(() => {
     if (address) {
+      console.log('TEST');
       getTokenData(address)
     }
   }, [address, getTokenData]);
 
   return {
     setStart,
-    setEnd
+    setEnd,
+    getTokenTransfers
   };
 };

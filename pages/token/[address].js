@@ -7,10 +7,16 @@ import Loading from '../../components/Loading';
 // import custom hook
 import { useTokenData } from '../../hooks/useTokenData';
 
-
+// state management
+import { useSelector } from 'react-redux';
 
 const Token = () => {
   const { } = useTokenData();
+
+  // global state
+  const token = useSelector((state) => state.token);
+
+  console.log('token', token);
 
 
   return (
