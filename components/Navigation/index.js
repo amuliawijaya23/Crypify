@@ -191,7 +191,7 @@ export const Navigation = () => {
 						    </SearchIconWrapper>
 						    <StyledInputBase
 							    fullWidth
-							    placeholder='Search Pair…'
+							    placeholder='Search Token'
 							    inputProps={{ 'aria-label': 'search' }}
 							    value={address}
 							    onChange={(e) => setAddress(e.target.value)}
