@@ -1,14 +1,11 @@
 import axios from 'axios';
 
 // import react hooks
-import { useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 // import from Date-fns
 import getUnixTime from 'date-fns/getUnixTime';
 import startOfDay from 'date-fns/startOfDay';
-
-// import ethers js
-// import { ethers } from 'ethers';
 
 // import NEXT router
 import { useRouter } from 'next/router';
@@ -17,7 +14,13 @@ import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 
 // reducers
-import { setTokenProfile, setTransfersStartDate, setTransfersEndDate, setTransfersData } from '../state/reducers/token';
+import { 
+  setToken, 
+  setTokenProfile, 
+  setTransfersStartDate, 
+  setTransfersEndDate, 
+  setTransfersData 
+} from '../state/reducers/token';
 
 export const useTokenData = () => {
   // set up router
@@ -27,8 +30,15 @@ export const useTokenData = () => {
 
   const dispatch = useDispatch();
 
+  // global state
+  const token = useSelector((state) => state.token.value);
+
+  // local state
+  const [ loading, setLoading ] = useState(false);
+
   const getTokenData = useCallback(async (token) => {
     try {
+      setLoading(true);
       const start = getUnixTime(startOfDay(new Date()));
       const end = getUnixTime(new Date());
 
@@ -37,14 +47,19 @@ export const useTokenData = () => {
         axios.post('/api/token/transfers', { address: token, start: start, end: end})
       ]);
 
-      console.log('transfers', transfers.data)
+      dispatch(setToken({
+        profile: profile.data,
+        transfers: {
+          start: start,
+          end: end,
+          data: transfers.data
+        }
+      }));
 
-      dispatch(setTransfersStartDate(start));
-      dispatch(setTransfersEndDate(end));
-      dispatch(setTokenProfile(profile.data));
-      dispatch(setTransfersData(transfers.data));
+      setLoading(false);
 
     } catch (error) {
+      setLoading(false);
       console.error(error.response ? error.response.body : error);
     }
   }, [dispatch]);
@@ -65,11 +80,16 @@ export const useTokenData = () => {
     dispatch(setTransfersEndDate(newEnd));
   };
 
-  const getTokenTransfers = () => {
-
+  const getTokenTransfers = async () => {
+    const tokenAddress = token.profile.address;
+    const start = token.transfers.start;
+    const end = token.transfers.end;
+    const { data } = await axios.post('/api/token/transfers', { address: tokenAddress, start: start, end: end });
+    dispatch(setTransfersData(data));
   };
 
   return {
+    loading,
     setStart,
     setEnd,
     getTokenTransfers

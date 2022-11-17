@@ -11,10 +11,18 @@ import { useTokenData } from '../../hooks/useTokenData';
 import { useSelector } from 'react-redux';
 
 const Token = () => {
-  const { setStart, setEnd, getTokenTransfers } = useTokenData();
+  const { loading, setStart, setEnd, getTokenTransfers } = useTokenData();
 
   // global state
   const token = useSelector((state) => state.token);
+
+  if (loading) {
+    return (
+      <Box sx={{ height: '80vh' }}>
+				<Loading />
+			</Box>
+    );
+  };
 
   return (
     <>

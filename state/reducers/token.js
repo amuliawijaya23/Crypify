@@ -5,11 +5,13 @@ import startOfDay from 'date-fns/startOfDay';
 import getUnixTime from 'date-fns/getUnixTime';
 
 const initialState = {
-  profile: {},
-  transfers: {
-    start: null,
-    end: null,
-    data: []
+  value: {
+    profile: {},
+    transfers: {
+      start: null,
+      end: null,
+      data: []
+    }
   }
 };
 
@@ -17,20 +19,23 @@ export const tokenSlice = createSlice({
   name: 'token',
   initialState: initialState,
   reducers: {
+    setToken: (state, action) => {
+      state.value = action.payload;
+    },
     setTokenProfile: (state, action) => {
-      state.profile = action.payload;
+      state.value.profile = action.payload;
     },
     setTransfersStartDate: (state, action) => {
-      state.transfers.start = action.payload;
+      state.value.transfers.start = action.payload;
     },
     setTransfersEndDate: (state, action) => {
-      state.transfers.end = action.payload;
+      state.value.transfers.end = action.payload;
     },
     setTransfersData: (state, action) => {
-      state.transfers.data = action.payload;
+      state.value.transfers.data = action.payload;
     },
   }
 });
 
-export const { setTokenProfile, setTransfersStartDate, setTransfersEndDate, setTransfersData } = tokenSlice.actions;
+export const { setToken, setTokenProfile, setTransfersStartDate, setTransfersEndDate, setTransfersData } = tokenSlice.actions;
 export default tokenSlice.reducer;
