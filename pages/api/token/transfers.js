@@ -17,24 +17,21 @@ export default async function handler(req, res) {
       const start = req.body.start;
       const end = req.body.end;
 
-      const abi = [
-        "event Transfer(address indexed from, address indexed to, uint amount)"
-      ];
-
-      const [block0, block1] = await Promise.all([
+      const [abi, block0, block1] = await Promise.all([
+        axios.get(`https://api.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_KEY}`),
         axios.get(`https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=${start}&closest=before&apikey=${ETHERSCAN_KEY}`),
         axios.get(`https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=${end}&closest=before&apikey=${ETHERSCAN_KEY}`)
       ]);
       
       const startBlock = parseFloat(block0.data.result);
-      const endBlock = parseFloat(block1.data.result);
+      const endBlock = parseFloat(block1.data.result) || 'latest';
       
-      const contract = new ethers.Contract(address, abi, provider);
+      const contract = new ethers.Contract(address, abi.data.result, provider);
 
       const filterAll = contract.filters.Transfer();
       const transfers = await contract.queryFilter(filterAll, startBlock, endBlock);
 
-      console.log('T', transfers);
+      const decimals = await contract.decimals();
 
       const aggregatedTransfers = await Promise.all(transfers.map(async(t) => (
         {
@@ -43,7 +40,7 @@ export default async function handler(req, res) {
           transactionHash: t.transactionHash,
           from: t.args.from,
           to: t.args.to,
-          // amount: ethers.utils.formatUnits(t.args.amount.toString(), decimals),
+          amount: ethers.utils.formatUnits(t.args.value.toString(), decimals),
           timestamp: await (async () => (await t.getBlock()).timestamp)()
         }
       )));
