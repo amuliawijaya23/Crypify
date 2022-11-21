@@ -39,7 +39,7 @@ const TokenProfile = () => {
       <Divider/>
       <CardContent>
         <Grid container spacing={1}>
-          <Grid item xs={6}>
+          <Grid item xs={12} md={6}>
             <Typography component='div' variant='body2'>
 					    <b>Address:</b> {`${token?.profile?.address?.slice(0, 4)} ...${token?.profile?.address?.slice(37)}`}
 					    <IconButton
@@ -50,8 +50,8 @@ const TokenProfile = () => {
 					    </IconButton>
 				    </Typography>
           </Grid>
-          <Grid item xs={6}>
-            <Typography component='div' variant='body2' sx={{ ml: 3 }}>
+          <Grid item xs={12} md={6}>
+            <Typography component='div' variant='body2'>
 					    <b>Pair:</b> {`${token?.profile?.pair?.slice(0, 4)} ...${token?.profile?.pair?.slice(37)}`}
 					    <IconButton
 						    edge='end'
