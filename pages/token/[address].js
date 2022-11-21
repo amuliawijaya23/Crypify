@@ -1,23 +1,16 @@
 // import from MUI
-import { Box, Grid, Card, Typography } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 
 // import custom components
 import Loading from '../../components/Loading';
 import TokenProfile from '../../components/TokenProfile';
+import TokenTransfers from '../../components/TokenTransfers';
 
 // import custom hook
 import { useTokenData } from '../../hooks/useTokenData';
 
-// state management
-import { useSelector } from 'react-redux';
-
 const Token = () => {
-  const { loading, setStart, setEnd, getTokenTransfers } = useTokenData();
-
-  // global state
-  const token = useSelector((state) => state.token);
-
-  console.log('token', token);
+  const { loading, loadTransfers, setStart, setEnd, getTokenTransfers } = useTokenData();
 
   if (loading) {
     return (
@@ -32,6 +25,9 @@ const Token = () => {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <TokenProfile />
+        </Grid>
+        <Grid item xs={12}>
+          <TokenTransfers loading={loadTransfers} setStart={setStart} setEnd={setEnd} getTokenTransfers={getTokenTransfers}/>
         </Grid>
       </Grid>
     </Box>

@@ -16,7 +16,7 @@ import { useSelector, useDispatch } from 'react-redux';
 // reducers
 import { 
   setToken, 
-  setTokenProfile, 
+  setTokenProfile,
   setTransfersStartDate, 
   setTransfersEndDate, 
   setTransfersData 
@@ -35,6 +35,7 @@ export const useTokenData = () => {
 
   // local state
   const [ loading, setLoading ] = useState(false);
+  const [ loadTransfers, setLoadTransfers ] = useState(false);
 
   const getTokenData = useCallback(async (token) => {
     try {
@@ -81,15 +82,23 @@ export const useTokenData = () => {
   };
 
   const getTokenTransfers = async () => {
-    const tokenAddress = token.profile.address;
-    const start = token.transfers.start;
-    const end = token.transfers.end;
-    const { data } = await axios.post('/api/token/transfers', { address: tokenAddress, start: start, end: end });
-    dispatch(setTransfersData(data));
+    try {
+      setLoadTransfers(true);
+      const tokenAddress = token.profile.address;
+      const start = token.transfers.start;
+      const end = token.transfers.end;
+      const { data } = await axios.post('/api/token/transfers', { address: tokenAddress, start: start, end: end });
+      dispatch(setTransfersData(data));
+      setLoadTransfers(false);
+    } catch (error) {
+      setLoadTransfers(false);
+      console.error(error.response ? error.response.body : error);
+    }
   };
 
   return {
     loading,
+    loadTransfers,
     setStart,
     setEnd,
     getTokenTransfers

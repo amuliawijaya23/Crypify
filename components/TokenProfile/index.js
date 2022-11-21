@@ -22,7 +22,6 @@ const TokenProfile = () => {
   // global state
   const token = useSelector((state) => state.token.value);
 
-
   return (
     <Card sx={{ width: '100%', height: '100%', p: 0.5 }}>
       <CardHeader
