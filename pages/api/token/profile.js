@@ -18,15 +18,16 @@ export default async function handler(req, res) {
       const abi = await axios.get(`https://api.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_KEY}`);
 
       const tokenContract = new ethers.Contract(address, abi.data.result, provider);
-      const totalSupply = await tokenContract.totalSupply();
-
+      const decimals = await tokenContract.decimals();
+      const totalSupply = await (await tokenContract.totalSupply()).toString();
+      
       const tokenInfo = {
         address: address,
         pair: await tokenContract.uniswapV2Pair(),
         name: await tokenContract.name(),
         symbol: await tokenContract.symbol(),
-        decimals: await tokenContract.decimals(),
-        totalSupply: await totalSupply.toString(),
+        decimals: decimals,
+        totalSupply: parseFloat(ethers.utils.formatUnits(totalSupply, decimals)),
         owner: await tokenContract.owner()
       };
 
