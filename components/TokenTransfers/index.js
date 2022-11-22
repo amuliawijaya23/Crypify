@@ -3,6 +3,9 @@ import { useState } from 'react'
 // import from date fns
 import fromUnixTime from 'date-fns/fromUnixTime';
 
+// import custom component
+import Transfer from './Transfer';
+
 // import from MUI
 import { 
   Card,
@@ -117,7 +120,7 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
 						{transfers?.data
 							?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 							.map((transfer, i) => (
-                <></>
+                <Transfer key={`token-transfer-${i}`} transfer={transfer} />
 							))}
 					</TableBody>
 				</Table>
