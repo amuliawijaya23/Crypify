@@ -1,5 +1,8 @@
 import { useState } from 'react'
 
+// import from date fns
+import fromUnixTime from 'date-fns/fromUnixTime';
+
 // import from MUI
 import { 
   Card,
@@ -69,14 +72,14 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
 					<DateTimePicker
 						maxDate={new Date()}
 						label='Start'
-						value={transfers?.start}
+						value={fromUnixTime(transfers?.start)}
 						onChange={setStart}
 						renderInput={(params) => <TextField {...params} size='small' sx={{ mx: 1 }} />}
 					/>
 					<DateTimePicker
 						maxDate={new Date()}
 						label='End'
-						value={transfers?.end}
+						value={fromUnixTime(transfers?.end)}
 						onChange={setEnd}
 						renderInput={(params) => <TextField {...params} size='small' sx={{ mx: 1 }} />}
 					/>
