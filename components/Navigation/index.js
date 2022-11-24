@@ -138,7 +138,7 @@ const NavDrawer = styled(Drawer, {
 	})
 }));
 
-export const Navigation = () => {
+export const Navigation = ({ login, logout }) => {
   // set router
   const router = useRouter();
   // Global state
@@ -178,6 +178,10 @@ export const Navigation = () => {
   const handleSearchClose = () => {
     setSearch(false);
   };
+
+	const userHandler = () => {
+		user ? logout() : login();
+	};
 
   return (
     <>
@@ -266,7 +270,7 @@ export const Navigation = () => {
 						mb: 1
 					}}>
 					<ListItem key={'authenticate'} disablePadding sx={{ display: 'block' }}>
-						<ListItemButton sx={buttonStyle}>
+						<ListItemButton sx={buttonStyle} onClick={userHandler}>
 							{!user ? (
 								<>
 									<ListItemIcon sx={iconStyle}>

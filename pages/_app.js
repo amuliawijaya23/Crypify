@@ -8,6 +8,9 @@ import { styled } from '@mui/material/styles';
 // import custom component
 import { Navigation } from '../components/Navigation';
 
+// import custom hooks
+import { useUserData } from '../hooks/useUserData';
+
 const DrawerHeader = styled('div')(({ theme }) => ({
 	display: 'flex',
 	alignItems: 'center',
@@ -18,11 +21,12 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }));
 
 function MyApp({ Component, pageProps }) {
+	const { signInWithGoogle, signOutFromGoogle } = useUserData();
   return (
     <Provider store={store}>
       <Box sx={{display: 'flex'}}>
         <CssBaseline />
-        <Navigation />
+        <Navigation login={signInWithGoogle} logout={signOutFromGoogle} />
 				<Box component='main' sx={{ flexGrow: 1, p: 2, mt: 2 }}>
 					<DrawerHeader />
 					<Component {...pageProps} />
