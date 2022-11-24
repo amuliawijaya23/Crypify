@@ -42,11 +42,11 @@ const Transfer = ({ transfer }) => {
 			<TableCell component='th' scope='row'>
 				{(transferFrom === pair || transferFrom === address) &&
 					<Tooltip title='Contract'>
-						<ArticleIcon fontSize='xs' />
+						<ArticleIcon fontSize='xs' sx={{ mr: 0.5 }} />
 					</Tooltip>}
 				<Tooltip title={transferFrom}>
 					<Typography component='span'>
-						{transferFrom === pair ? `Uniswap V2: ${token?.profile?.symbol}` : `${transferFrom?.slice(0, 4)} ...${transferFrom?.slice(35)}`}
+						{transferFrom === pair ? `Uniswap V2: ${token?.profile?.symbol}` : ` ${transferFrom?.slice(0, 4)} ...${transferFrom?.slice(35)}`}
 					</Typography>
 				</Tooltip>
 				<IconButton
@@ -59,7 +59,7 @@ const Transfer = ({ transfer }) => {
 			<TableCell component='th' scope='row'>
 				{(transferTo === pair || transferTo === address) &&
 					<Tooltip title='Contract'>
-						<ArticleIcon fontSize='xs' />
+						<ArticleIcon fontSize='xs' sx={{ mr: 0.5 }} />
 					</Tooltip>}
 				<Tooltip title={transferTo}>
 					<Typography component='span'>
