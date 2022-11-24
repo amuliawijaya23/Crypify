@@ -15,6 +15,9 @@ import {
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 
+// import NumericFormat from react-number-format;
+import { NumericFormat } from 'react-number-format';
+
 // state management
 import { useSelector } from 'react-redux';
 
@@ -83,7 +86,12 @@ const TokenProfile = () => {
       <Divider />
       <CardContent>
         <Typography component='div' variant='body2'>
-					<b>Total Supply:</b> {token?.profile?.totalSupply}
+					<b>Total Supply: </b>
+					<NumericFormat 
+						value={token?.profile?.totalSupply}
+						decimalScale={2}
+						displayType='text'
+					/>
 				</Typography>
       </CardContent>
     </Card>

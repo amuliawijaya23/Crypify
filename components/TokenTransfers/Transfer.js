@@ -7,8 +7,7 @@ import ArticleIcon from '@mui/icons-material/Article';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import fromUnixTime from 'date-fns/fromUnixTime';
 
-// import number-format
-// import NumberFormat from 'react-number-format';
+// import NumericFormat from react-number-format;
 import { NumericFormat } from 'react-number-format';
 
 // state management

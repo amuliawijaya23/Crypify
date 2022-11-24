@@ -27,7 +27,7 @@ export default async function handler(req, res) {
         name: await tokenContract.name(),
         symbol: await tokenContract.symbol(),
         decimals: decimals,
-        totalSupply: parseFloat(ethers.utils.formatUnits(totalSupply, decimals)),
+        totalSupply: ethers.utils.formatUnits(totalSupply, decimals),
         owner: await tokenContract.owner()
       };
 
