@@ -81,6 +81,7 @@ const Transfer = ({ transfer }) => {
 						value={transfer?.amount}
 						displayType='text'
 						decimalScale={2}
+						thousandSeparator
 					/>
 			</TableCell>
 		</TableRow>
