@@ -45,7 +45,7 @@ export default async function handler(req, res) {
         }
       )));
 
-      res.send(aggregatedTransfers);
+      res.send(aggregatedTransfers.sort((a, b) => b.timestamp - a.timestamp));
     }
   } catch (error) {
     console.error(error.response ? error.response.body : error);
