@@ -1,15 +1,24 @@
 // import from MUI
 import { IconButton, TableCell, TableRow, Typography, Tooltip } from '@mui/material';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import ArticleIcon from '@mui/icons-material/Article';
 
 // import from date fns
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import fromUnixTime from 'date-fns/fromUnixTime';
 
-const UNISWAP_V3 = '0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45';
-const UNISWAP_V2 = '0xaf37c86f4fac3512de41739a822b08011a7981c0';
+// state management
+import { useSelector } from 'react-redux';
 
 const Transfer = ({ transfer }) => {
+	// global state
+	const token = useSelector((state) => state.token.value);
+
+	const address = token?.profile?.address?.toLowerCase();
+	const pair = token?.profile?.pair?.toLowerCase();
+	const transferFrom = transfer?.from?.toLowerCase();
+	const transferTo = transfer?.to?.toLowerCase();
+
   return (
     <TableRow key={transfer?.transactionHash}>
 			<TableCell component='th' scope='row'>
@@ -31,50 +40,36 @@ const Transfer = ({ transfer }) => {
 				})}
 			</TableCell>
 			<TableCell component='th' scope='row'>
-				<Tooltip title={transfer?.from}>
+				{(transferFrom === pair || transferFrom === address) &&
+					<Tooltip title='Contract'>
+						<ArticleIcon fontSize='xs' />
+					</Tooltip>}
+				<Tooltip title={transferFrom}>
 					<Typography component='span'>
-						{(() => {
-							switch (transfer?.from) {
-								case UNISWAP_V2:
-									return 'Uniswap V2';
-
-								case UNISWAP_V3:
-									return 'Uniswap V3';
-
-								default:
-									return `${transfer?.from?.slice(0, 4)} ...${transfer?.from?.slice(35)}`;
-							}
-						})()}
+						{transferFrom === pair ? `Uniswap V2: ${token?.profile?.symbol}` : `${transferFrom?.slice(0, 4)} ...${transferFrom?.slice(35)}`}
 					</Typography>
 				</Tooltip>
 				<IconButton
 					edge='end'
 					size='small'
-					onClick={() => navigator.clipboard.writeText(transfer?.from)}>
+					onClick={() => navigator.clipboard.writeText(transferFrom)}>
 					<ContentCopyIcon sx={{ width: 15 }} />
 				</IconButton>
 			</TableCell>
 			<TableCell component='th' scope='row'>
-				<Tooltip title={transfer?.to}>
+				{(transferTo === pair || transferTo === address) &&
+					<Tooltip title='Contract'>
+						<ArticleIcon fontSize='xs' />
+					</Tooltip>}
+				<Tooltip title={transferTo}>
 					<Typography component='span'>
-						{(() => {
-							switch (transfer?.to) {
-								case UNISWAP_V2:
-									return 'Uniswap V2';
-
-								case UNISWAP_V3:
-									return 'Uniswap V3';
-
-								default:
-									return `${transfer?.to?.slice(0, 4)} ...${transfer?.to?.slice(35)}`;
-							}
-						})()}
+						{transferTo === pair ? `Uniswap V2: ${token?.profile?.symbol}` : `${transferTo?.slice(0, 4)} ...${transferTo?.slice(35)}`}
 					</Typography>
 				</Tooltip>
 				<IconButton
 					edge='end'
 					size='small'
-					onClick={() => navigator.clipboard.writeText(transfer?.to)}>
+					onClick={() => navigator.clipboard.writeText(transferTo)}>
 					<ContentCopyIcon sx={{ width: 15 }} />
 				</IconButton>
 			</TableCell>
