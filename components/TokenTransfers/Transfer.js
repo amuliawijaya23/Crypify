@@ -7,6 +7,10 @@ import ArticleIcon from '@mui/icons-material/Article';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import fromUnixTime from 'date-fns/fromUnixTime';
 
+// import number-format
+// import NumberFormat from 'react-number-format';
+import { NumericFormat } from 'react-number-format';
+
 // state management
 import { useSelector } from 'react-redux';
 
@@ -73,7 +77,13 @@ const Transfer = ({ transfer }) => {
 					<ContentCopyIcon sx={{ width: 15 }} />
 				</IconButton>
 			</TableCell>
-			<TableCell align='right'>{transfer?.amount}</TableCell>
+			<TableCell align='right'>
+				<NumericFormat
+						value={transfer?.amount}
+						displayType='text'
+						decimalScale={2}
+					/>
+			</TableCell>
 		</TableRow>
   )
 }
