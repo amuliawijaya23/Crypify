@@ -20,9 +20,9 @@ export const useUserData = () => {
 			dispatch(login(userData));
 		};
 
-		return () => {
-			dispatch(logout());
-		};
+		// return () => {
+		// 	dispatch(logout());
+		// };
 	}, [dispatch]);
 
 	const signInWithGoogle = async () => {
