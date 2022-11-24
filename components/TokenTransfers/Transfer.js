@@ -77,12 +77,14 @@ const Transfer = ({ transfer }) => {
 				</IconButton>
 			</TableCell>
 			<TableCell align='right'>
+				<b>
 				<NumericFormat
 						value={transfer?.amount}
 						displayType='text'
-						decimalScale={2}
+						decimalScale={5}
 						thousandSeparator
 					/>
+				</b>
 			</TableCell>
 		</TableRow>
   )

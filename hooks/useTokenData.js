@@ -5,7 +5,7 @@ import { useState, useCallback, useEffect } from 'react';
 
 // import from Date-fns
 import getUnixTime from 'date-fns/getUnixTime';
-import startOfDay from 'date-fns/startOfDay';
+import subHours from 'date-fns/subHours';
 
 // import NEXT router
 import { useRouter } from 'next/router';
@@ -16,10 +16,10 @@ import { useSelector, useDispatch } from 'react-redux';
 // reducers
 import { 
   setToken, 
-  setTokenProfile,
   setTransfersStartDate, 
   setTransfersEndDate, 
-  setTransfersData 
+  setTransfersData,
+  resetToken
 } from '../state/reducers/token';
 
 export const useTokenData = () => {
@@ -40,7 +40,7 @@ export const useTokenData = () => {
   const getTokenData = useCallback(async (token) => {
     try {
       setLoading(true);
-      const start = getUnixTime(startOfDay(new Date()));
+      const start = getUnixTime(subHours(new Date(), 24));
       const end = getUnixTime(new Date());
 
       const [profile, transfers] = await Promise.all([
@@ -68,8 +68,12 @@ export const useTokenData = () => {
   useEffect(() => {
     if (address) {
       getTokenData(address)
-    }
-  }, [address, getTokenData]);
+    };
+
+    return () => {
+      dispatch(resetToken());
+    };
+  }, [address, getTokenData, dispatch]);
 
   const setStart = (input) => {
     const newStart = getUnixTime(input);
