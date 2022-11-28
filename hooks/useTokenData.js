@@ -19,6 +19,7 @@ import {
   setTransfersStartDate, 
   setTransfersEndDate, 
   setTransfersData,
+  setTransfersHolders,
   resetToken
 } from '../state/reducers/token';
 
@@ -53,7 +54,8 @@ export const useTokenData = () => {
         transfers: {
           start: start,
           end: end,
-          data: transfers.data
+          data: transfers.data.events,
+          holders: transfers.data.holders
         }
       }));
 
@@ -92,7 +94,8 @@ export const useTokenData = () => {
       const start = token.transfers.start;
       const end = token.transfers.end;
       const { data } = await axios.post('/api/token/transfers', { address: tokenAddress, start: start, end: end });
-      dispatch(setTransfersData(data));
+      dispatch(setTransfersData(data?.events));
+      dispatch(setTransfersHolders(data?.holders));
       setLoadTransfers(false);
     } catch (error) {
       setLoadTransfers(false);

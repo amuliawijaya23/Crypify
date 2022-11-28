@@ -32,6 +32,9 @@ export default async function handler(req, res) {
       const transfers = await contract.queryFilter(filterAll, startBlock, endBlock);
 
       const decimals = await contract.decimals();
+      const pair = await contract.uniswapV2Pair();
+      const tokenAddress = address.toLowerCase();
+      const pairAddress = pair.toLowerCase();
 
       const aggregatedTransfers = await Promise.all(transfers.map(async(t) => (
         {
@@ -45,7 +48,30 @@ export default async function handler(req, res) {
         }
       )));
 
-      res.send(aggregatedTransfers.sort((a, b) => b.timestamp - a.timestamp));
+      const wallets = [];
+
+      for (const transfer of aggregatedTransfers) {
+        const from = transfer.from.toLowerCase();
+        const to = transfer.from.toLowerCase();
+
+        if ((from !== tokenAddress && from !== pairAddress) || (to!== tokenAddress && to !== pairAddress)) {
+          if (to !== tokenAddress && to !== pairAddress) {
+            wallets.push(to);
+          };
+          if (from !== tokenAddress && from !== pairAddress) {
+            wallets.push(from);
+          };
+        };
+      };
+
+      const holders = [...new Set(wallets)];
+
+      const data = {
+        events: aggregatedTransfers.sort((a, b) => b.timestamp - a.timestamp),
+        holders: holders,
+      }
+
+      res.send(data);
     }
   } catch (error) {
     console.error(error.response ? error.response.body : error);

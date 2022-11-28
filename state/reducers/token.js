@@ -6,7 +6,8 @@ const initialState = {
     transfers: {
       start: null,
       end: null,
-      data: []
+      data: [],
+      holders: []
     }
   }
 };
@@ -30,6 +31,9 @@ export const tokenSlice = createSlice({
     setTransfersData: (state, action) => {
       state.value.transfers.data = action.payload;
     },
+    setTransfersHolders: (state, action) => {
+      state.value.transfers.holders = action.payload;
+    },
     resetToken: (state, action) => {
       state.value = initialState;
     }
@@ -41,7 +45,8 @@ export const {
   setTokenProfile, 
   setTransfersStartDate, 
   setTransfersEndDate, 
-  setTransfersData, 
+  setTransfersData,
+  setTransfersHolders,
   resetToken 
 } = tokenSlice.actions;
 export default tokenSlice.reducer;

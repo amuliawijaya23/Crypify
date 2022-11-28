@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 // import from MUI
-import { styled, alpha, useTheme } from '@mui/material/styles';
+import { styled, alpha } from '@mui/material/styles';
 import {
 	Drawer,
 	AppBar,
