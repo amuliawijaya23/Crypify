@@ -94,6 +94,12 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
 					onClick={getTokenTransfers}>
 					Search
 				</Button>
+				<Button
+					variant='outlined'
+					sx={{ mx: 0.5 }}
+					>
+					Holders
+				</Button>
 			</Toolbar>
 			<TableContainer component={Paper} sx={{ maxHeight: 550, mt: 2 }}>
 				<Table stickyHeader aria-label='collapsible table' size='small'>
