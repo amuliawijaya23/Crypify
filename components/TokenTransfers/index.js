@@ -5,6 +5,7 @@ import fromUnixTime from 'date-fns/fromUnixTime';
 
 // import custom component
 import Transfer from './Transfer';
+import Holders from './Holders';
 
 // import from MUI
 import { 
@@ -40,6 +41,7 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
   // local state
   const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
+	const [open, setOpen] = useState(false);
 
 	const handleChangePage = (event, newPage) => {
 		setPage(newPage);
@@ -48,6 +50,14 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
 	const handleChangeRowsPerPage = (event) => {
 		setRowsPerPage(+event.target.value);
 		setPage(0);
+	};
+
+	const openHolders = () => {
+		setOpen(true);
+	};
+
+	const closeHolders = () => {
+		setOpen(close);
 	};
 
   if (loading) {
@@ -69,6 +79,8 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
 	};
 
   return (
+		<>
+		<Holders open={open} onClose={closeHolders} />
     <Card>
 			<Toolbar>
 				<LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -97,6 +109,7 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
 				<Button
 					variant='outlined'
 					sx={{ mx: 0.5 }}
+					onClick={openHolders}
 					>
 					Holders
 				</Button>
@@ -144,6 +157,7 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
 				/>
 			)}
 		</Card>
+		</>
   )
 }
 
