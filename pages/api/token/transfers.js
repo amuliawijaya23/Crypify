@@ -70,7 +70,7 @@ export default async function handler(req, res) {
       const data = {
         events: aggregatedTransfers.sort((a, b) => b.timestamp - a.timestamp),
         holders: holders,
-      }
+      };
 
       res.send(data);
     }

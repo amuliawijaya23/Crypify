@@ -80,85 +80,84 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
 
   return (
 		<>
-		<Holders open={open} onClose={closeHolders} />
-    <Card>
-			<Toolbar>
-				<LocalizationProvider dateAdapter={AdapterDateFns}>
-					<DateTimePicker
-						maxDate={new Date()}
-						label='Start'
-						value={fromUnixTime(transfers?.start)}
-						onChange={setStart}
-						renderInput={(params) => <TextField {...params} size='small' sx={{ mx: 1 }} />}
+			<Holders open={open} onClose={closeHolders} />
+    	<Card>
+				<Toolbar>
+					<LocalizationProvider dateAdapter={AdapterDateFns}>
+						<DateTimePicker
+							maxDate={new Date()}
+							label='Start'
+							value={fromUnixTime(transfers?.start)}
+							onChange={setStart}
+							renderInput={(params) => <TextField {...params} size='small' sx={{ mx: 1 }} />}
+						/>
+						<DateTimePicker
+							maxDate={new Date()}
+							label='End'
+							value={fromUnixTime(transfers?.end)}
+							onChange={setEnd}
+							renderInput={(params) => <TextField {...params} size='small' sx={{ mx: 1 }} />}
+						/>
+					</LocalizationProvider>
+					<Button
+						variant='outlined'
+						sx={{ mx: 0.5 }}
+						startIcon={<DateRangeIcon />}
+						onClick={getTokenTransfers}>
+						Search
+					</Button>
+					<Button
+						variant='outlined'
+						sx={{ mx: 0.5 }}
+						onClick={openHolders}>
+						Wallets
+					</Button>
+				</Toolbar>
+				<TableContainer component={Paper} sx={{ maxHeight: 550, mt: 2 }}>
+					<Table stickyHeader aria-label='collapsible table' size='small'>
+						<TableHead>
+							<TableRow>
+								<TableCell>
+									<b>Hash</b>
+								</TableCell>
+								<TableCell>
+									<b>Date</b>
+								</TableCell>
+								<TableCell>
+									<b>From</b>
+								</TableCell>
+								<TableCell>
+									<b>To</b>
+								</TableCell>
+								<TableCell align='right'>
+									<b>Amount</b>
+								</TableCell>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+							{transfers?.data
+								?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+								.map((transfer, i) => (
+                	<Transfer key={`token-transfer-${i}`} transfer={transfer} />
+								))}
+						</TableBody>
+					</Table>
+				</TableContainer>
+				{transfers?.data?.length > 0 && (
+					<TablePagination
+						rowsPerPageOptions={[10, 25, 100]}
+						component={Paper}
+						count={transfers?.data?.length}
+						rowsPerPage={rowsPerPage}
+						page={page}
+						onPageChange={handleChangePage}
+						onRowsPerPageChange={handleChangeRowsPerPage}
+						size='small'
 					/>
-					<DateTimePicker
-						maxDate={new Date()}
-						label='End'
-						value={fromUnixTime(transfers?.end)}
-						onChange={setEnd}
-						renderInput={(params) => <TextField {...params} size='small' sx={{ mx: 1 }} />}
-					/>
-				</LocalizationProvider>
-				<Button
-					variant='outlined'
-					sx={{ mx: 0.5 }}
-					startIcon={<DateRangeIcon />}
-					onClick={getTokenTransfers}>
-					Search
-				</Button>
-				<Button
-					variant='outlined'
-					sx={{ mx: 0.5 }}
-					onClick={openHolders}
-					>
-					Holders
-				</Button>
-			</Toolbar>
-			<TableContainer component={Paper} sx={{ maxHeight: 550, mt: 2 }}>
-				<Table stickyHeader aria-label='collapsible table' size='small'>
-					<TableHead>
-						<TableRow>
-							<TableCell>
-								<b>Hash</b>
-							</TableCell>
-							<TableCell>
-								<b>Date</b>
-							</TableCell>
-							<TableCell>
-								<b>From</b>
-							</TableCell>
-							<TableCell>
-								<b>To</b>
-							</TableCell>
-							<TableCell align='right'>
-								<b>Amount</b>
-							</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{transfers?.data
-							?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-							.map((transfer, i) => (
-                <Transfer key={`token-transfer-${i}`} transfer={transfer} />
-							))}
-					</TableBody>
-				</Table>
-			</TableContainer>
-			{transfers?.data?.length > 0 && (
-				<TablePagination
-					rowsPerPageOptions={[10, 25, 100]}
-					component={Paper}
-					count={transfers?.data?.length}
-					rowsPerPage={rowsPerPage}
-					page={page}
-					onPageChange={handleChangePage}
-					onRowsPerPageChange={handleChangeRowsPerPage}
-					size='small'
-				/>
-			)}
-		</Card>
+				)}
+			</Card>
 		</>
-  )
-}
+  );
+};
 
 export default TokenTransfers
