@@ -1,7 +1,5 @@
 // import from MUI
 import { Button, Avatar, List, ListItem, ListItemAvatar, ListItemText, Dialog, Typography, DialogTitle } from '@mui/material';
-import PersonIcon from '@mui/icons-material/Person';
-import AddIcon from '@mui/icons-material/Add';
 
 // state management
 import { useSelector } from "react-redux"

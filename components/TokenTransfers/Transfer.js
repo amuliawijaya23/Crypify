@@ -27,7 +27,7 @@ const Transfer = ({ transfer }) => {
 			<TableCell component='th' scope='row'>
 				<Tooltip title={transfer?.transactionHash}>
 					<Typography component='span'>
-						{`${transfer?.transactionHash?.slice(0, 4)} ...${transfer?.transactionHash?.slice(50)}`}
+						{`${transfer?.transactionHash?.slice(0, 4)} ...${transfer?.transactionHash?.slice(55)}`}
 					</Typography>
 				</Tooltip>
 				<IconButton
