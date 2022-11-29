@@ -51,14 +51,15 @@ export default async function handler(req, res) {
       const wallets = [];
 
       for (const transfer of aggregatedTransfers) {
+        const burn = '0x000000000000000000000000000000000000dead';
         const from = transfer.from.toLowerCase();
-        const to = transfer.from.toLowerCase();
+        const to = transfer.to.toLowerCase();
 
-        if ((from !== tokenAddress && from !== pairAddress) || (to!== tokenAddress && to !== pairAddress)) {
-          if (to !== tokenAddress && to !== pairAddress) {
+        if ((from !== tokenAddress && from !== pairAddress && from !== burn) || (to !== tokenAddress && to !== pairAddress && to !== burn)) {
+          if (to !== tokenAddress && to !== pairAddress && to !== burn) {
             wallets.push(to);
           };
-          if (from !== tokenAddress && from !== pairAddress) {
+          if (from !== tokenAddress && from !== pairAddress && from !== burn) {
             wallets.push(from);
           };
         };
