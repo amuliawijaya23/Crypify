@@ -1,5 +1,6 @@
 // import from MUI
-import { Button, Avatar, List, ListItem, ListItemAvatar, ListItemText, Dialog, Typography, DialogTitle } from '@mui/material';
+import { Button, Avatar, List, ListItem, Divider, ListItemAvatar, ListItemText, Dialog, Typography, DialogTitle } from '@mui/material';
+import WalletIcon from '@mui/icons-material/Wallet';
 
 // state management
 import { useSelector } from "react-redux"
@@ -14,9 +15,17 @@ const Holders = ({ open, onClose }) => {
       </DialogTitle>
       <List sx={{ pt: 0 }}>
         {holders?.map((h, i) => (
-          <ListItem key={`holder-${i}`} button>
-            <ListItemText primary={h} />
-          </ListItem>
+          <>
+            <ListItem key={`holder-${i}`} button>
+              <ListItemAvatar>
+                <Avatar>
+                  <WalletIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText primary={h} />
+            </ListItem>
+            {i < (holders?.length - 1) && <Divider /> }
+          </>
         ))}
       </List>
     </Dialog>

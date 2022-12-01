@@ -57,7 +57,7 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
 	};
 
 	const closeHolders = () => {
-		setOpen(close);
+		setOpen(false);
 	};
 
   if (loading) {
