@@ -16,6 +16,7 @@ export default async function handler(req, res) {
       const address = req.body.address;
       const start = req.body.start;
       const end = req.body.end;
+      const holder = req.body.holder;
 
       const [abi, block0, block1] = await Promise.all([
         axios.get(`https://api.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_KEY}`),
@@ -28,8 +29,17 @@ export default async function handler(req, res) {
       
       const contract = new ethers.Contract(address, abi.data.result, provider);
 
-      const filterAll = contract.filters.Transfer();
-      const transfers = await contract.queryFilter(filterAll, startBlock, endBlock);
+      let filter = null;
+      let transfers = null;
+
+
+      if (holder) {
+        filter = contract.filters.Transfer(holder);
+        transfers = await contract.queryFilter(filter);
+      } else {
+        filter = filter = contract.filters.Transfer();
+        transfers = transfers = await contract.queryFilter(filter, startBlock, endBlock);
+      };
 
       const decimals = await contract.decimals();
       const pair = await contract.uniswapV2Pair();
