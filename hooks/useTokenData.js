@@ -103,11 +103,16 @@ export const useTokenData = () => {
     }
   };
 
+  const getHolderTransfers = async () => {
+
+  };
+
   return {
     loading,
     loadTransfers,
     setStart,
     setEnd,
-    getTokenTransfers
+    getTokenTransfers,
+    getHolderTransfers
   };
 };
