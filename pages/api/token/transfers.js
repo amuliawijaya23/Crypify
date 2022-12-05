@@ -46,24 +46,12 @@ export default async function handler(req, res) {
       const tokenAddress = address.toLowerCase();
       const pairAddress = pair.toLowerCase();
 
-      const aggregatedTransfers = await Promise.all(transfers.map(async(t) => (
-        {
-          blockNumber: t.blockNumber,
-          logIndex: t.logIndex,
-          transactionHash: t.transactionHash,
-          from: t.args.from,
-          to: t.args.to,
-          amount: ethers.utils.formatUnits(t.args.value.toString(), decimals),
-          timestamp: await (async () => (await t.getBlock()).timestamp)()
-        }
-      )));
-
       const wallets = [];
+      const burn = '0x000000000000000000000000000000000000dead';
 
-      for (const transfer of aggregatedTransfers) {
-        const burn = '0x000000000000000000000000000000000000dead';
-        const from = transfer.from.toLowerCase();
-        const to = transfer.to.toLowerCase();
+      const aggregatedTransfers = await Promise.all(transfers.map(async(t) => {
+        const from = t.args.from.toLowerCase();
+        const to = t.args.to.toLowerCase();
 
         if ((from !== tokenAddress && from !== pairAddress && from !== burn) || (to !== tokenAddress && to !== pairAddress && to !== burn)) {
           if (to !== tokenAddress && to !== pairAddress && to !== burn) {
@@ -73,7 +61,17 @@ export default async function handler(req, res) {
             wallets.push(from);
           };
         };
-      };
+
+        return {
+          blockNumber: t.blockNumber,
+          logIndex: t.logIndex,
+          transactionHash: t.transactionHash,
+          from: t.args.from,
+          to: t.args.to,
+          amount: ethers.utils.formatUnits(t.args.value.toString(), decimals),
+          timestamp: await (async () => (await t.getBlock()).timestamp)()
+        }
+      }));
 
       const holders = [...new Set(wallets)];
 
