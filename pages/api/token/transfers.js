@@ -16,7 +16,6 @@ export default async function handler(req, res) {
       const address = req.body.address;
       const start = req.body.start;
       const end = req.body.end;
-      const holder = req.body.holder;
 
       const [abi, block0, block1] = await Promise.all([
         axios.get(`https://api.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_KEY}`),
@@ -29,37 +28,27 @@ export default async function handler(req, res) {
       
       const contract = new ethers.Contract(address, abi.data.result, provider);
 
-      let filter = null;
-      let transfers = null;
-
-
-      if (holder) {
-        filter = contract.filters.Transfer(holder);
-        transfers = await contract.queryFilter(filter);
-      } else {
-        filter = filter = contract.filters.Transfer();
-        transfers = transfers = await contract.queryFilter(filter, startBlock, endBlock);
-      };
+      const filter = contract.filters.Transfer();
+      const filterQuery = await contract.queryFilter(filter, startBlock, endBlock);
 
       const decimals = await contract.decimals();
       const pair = await contract.uniswapV2Pair();
       const tokenAddress = address.toLowerCase();
       const pairAddress = pair.toLowerCase();
 
-      const wallets = [];
+      let wallets = [];
       const burn = '0x000000000000000000000000000000000000dead';
 
-      const aggregatedTransfers = await Promise.all(transfers.map(async(t) => {
-        const from = t.args.from.toLowerCase();
-        const to = t.args.to.toLowerCase();
+      const transfers = await Promise.all(filterQuery.map(async(t) => {
+        const transferFrom = t.args.from.toLowerCase();
+        const transferTo = t.args.to.toLowerCase();
 
-        if ((from !== tokenAddress && from !== pairAddress && from !== burn) || (to !== tokenAddress && to !== pairAddress && to !== burn)) {
-          if (to !== tokenAddress && to !== pairAddress && to !== burn) {
-            wallets.push(to);
-          };
-          if (from !== tokenAddress && from !== pairAddress && from !== burn) {
-            wallets.push(from);
-          };
+        if (transferFrom !== tokenAddress && transferFrom !== pairAddress && transferFrom !== burn) {
+          wallets.push(transferFrom);
+        };
+
+        if (transferTo !== tokenAddress && transferTo !== pairAddress && transferTo !== burn) {
+          wallets.push(transferTo);
         };
 
         return {
@@ -73,11 +62,11 @@ export default async function handler(req, res) {
         }
       }));
 
-      const holders = [...new Set(wallets)];
+      wallets = [...new Set(wallets)];
 
       const data = {
-        events: aggregatedTransfers.sort((a, b) => b.timestamp - a.timestamp),
-        holders: holders,
+        events: transfers.sort((a, b) => b.timestamp - a.timestamp),
+        holders: wallets,
       };
 
       res.send(data);
