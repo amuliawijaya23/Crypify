@@ -33,11 +33,13 @@ export default async function handler(req, res) {
 
       const decimals = await contract.decimals();
       const pair = await contract.uniswapV2Pair();
+
+      // exceptions for wallet filtering
       const tokenAddress = address.toLowerCase();
       const pairAddress = pair.toLowerCase();
+      const burn = '0x000000000000000000000000000000000000dead';
 
       let wallets = [];
-      const burn = '0x000000000000000000000000000000000000dead';
 
       const transfers = await Promise.all(filterQuery.map(async(t) => {
         const transferFrom = t.args.from.toLowerCase();
