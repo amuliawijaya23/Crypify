@@ -23,11 +23,11 @@ const Token = () => {
 
   return (
     <Box component='main' sx={{ width: '100%' }}>
-      <Grid container spacing={3}>
-        <Grid item xs={12} m={6}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={6}>
           <TokenProfile />
         </Grid>
-        <Grid item xs={12} m={6}>
+        <Grid item xs={12} md={6}>
           <TokenData />
         </Grid>
         <Grid item xs={12}>

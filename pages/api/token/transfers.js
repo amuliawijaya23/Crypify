@@ -17,8 +17,11 @@ export default async function handler(req, res) {
       const start = req.body.start;
       const end = req.body.end;
 
-      const [abi, block0, block1] = await Promise.all([
-        axios.get(`https://api.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_KEY}`),
+      const abi = [
+        "event Transfer(address indexed from, address indexed to, uint amount)"
+      ];
+
+      const [block0, block1] = await Promise.all([
         axios.get(`https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=${start}&closest=before&apikey=${ETHERSCAN_KEY}`),
         axios.get(`https://api.etherscan.io/api?module=block&action=getblocknobytime&timestamp=${end}&closest=before&apikey=${ETHERSCAN_KEY}`)
       ]);

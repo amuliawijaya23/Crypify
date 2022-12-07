@@ -14,8 +14,8 @@ const INFURA_URL = process.env.NEXT_PUBLIC_INFURA_URL;
 const provider = new ethers.providers.JsonRpcProvider(INFURA_URL);
 
 export default async function handler(req, res) {
-  try {
-    if (req.method === "POST") {
+  if (req.method === "POST") {
+      try {
       const address = req.body.address;
       
       const abi = await axios.get(`https://api.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_KEY}`);
@@ -34,11 +34,19 @@ export default async function handler(req, res) {
 
       const screeningData = await page.evaluate(() => {
         const result = document.querySelector('#shitcoin > div > div').innerText;
-        const taxes = document.querySelector('#shitcoin > div > p:nth-child(6)').innerText.split('\n');
-        const buyTax = taxes[0].split(':')[1].trim();
-        const sellTax = taxes[1].split(':')[1].trim();
+
+        const data = { result: result };
+
+        if (result !== 'Yup, honeypot. Run the fuck away.') {
+          const taxes = document.querySelector('#shitcoin > div > p:nth-child(6)').innerText.split('\n');
+          const buyTax = taxes[0].split(':')[1].trim();
+          const sellTax = taxes[1].split(':')[1].trim();
+
+          data.buyTax = buyTax;
+          data.sellTax = sellTax;
+        };
     
-        return { result: result, buyTax: buyTax, sellTax: sellTax };
+        return data;
       });
 
       // get data from coinmarketcap
@@ -71,8 +79,8 @@ export default async function handler(req, res) {
       };
 
       res.send(tokenInfo);
-    }
-  } catch (error) {
-    console.error(error.response ? error.response.body : error);
-  };
+    } catch (error) {
+      console.error(error.response ? error.response.body : error);
+    };
+  }
 }
