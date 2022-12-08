@@ -15,13 +15,13 @@ import { useSelector, useDispatch } from 'react-redux';
 
 // reducers
 import { 
-  setToken, 
+  setPool, 
   setTransfersStartDate, 
   setTransfersEndDate, 
   setTransfersData,
   setTransfersHolders,
-  resetToken
-} from '../state/reducers/token';
+  resetPool
+} from '../state/reducers/pool';
 
 export const useTokenData = () => {
   // set up router
@@ -32,25 +32,30 @@ export const useTokenData = () => {
   const dispatch = useDispatch();
 
   // global state
-  const token = useSelector((state) => state.token.value);
+  const pool = useSelector((state) => state.pool.value);
 
   // local state
   const [ loading, setLoading ] = useState(false);
   const [ loadTransfers, setLoadTransfers ] = useState(false);
 
-  const getTokenData = useCallback(async (token) => {
+  const getTokenData = useCallback(async (pairAddress) => {
     try {
       setLoading(true);
       const start = getUnixTime(subHours(new Date(), 24));
       const end = getUnixTime(new Date());
 
-      const [profile, transfers] = await Promise.all([
-        axios.post('/api/token/profile', { address: token }),
-        axios.post('/api/token/transfers', { address: token, start: start, end: end})
-      ]);
+      const { data } = await axios.post('/api/pool', { address: pairAddress });
 
-      dispatch(setToken({
-        profile: profile.data,
+      const transfers = await axios.post('/api/token/transfers', { 
+        token: data?.token0?.id, 
+        decimals: data?.token0?.decimals, 
+        pair: pairAddress, 
+        start: start, 
+        end: end 
+      });
+
+      dispatch(setPool({
+        profile: { ...data, address: pairAddress },
         transfers: {
           start: start,
           end: end,
@@ -73,7 +78,7 @@ export const useTokenData = () => {
     };
 
     return () => {
-      dispatch(resetToken());
+      dispatch(resetPool());
     };
   }, [address, getTokenData, dispatch]);
 
@@ -90,9 +95,9 @@ export const useTokenData = () => {
   const getTokenTransfers = async () => {
     try {
       setLoadTransfers(true);
-      const tokenAddress = token.profile.address;
-      const start = token.transfers.start;
-      const end = token.transfers.end;
+      const tokenAddress = pool?.profile?.token0?.id;
+      const start = pool?.transfers?.start;
+      const end = pool?.transfers?.end;
       const { data } = await axios.post('/api/token/transfers', { address: tokenAddress, start: start, end: end });
       dispatch(setTransfersData(data?.events));
       dispatch(setTransfersHolders(data?.holders));
