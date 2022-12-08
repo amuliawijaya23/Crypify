@@ -13,7 +13,9 @@ const provider = new ethers.providers.JsonRpcProvider(INFURA_URL);
 export default async function handler(req, res) {
   try {
     if (req.method === "POST") {
-      const address = req.body.address;
+      const token = req.body.token;
+      const pair = req.body.pair;
+      const decimals = req.body.decimals;
       const start = req.body.start;
       const end = req.body.end;
 
@@ -29,16 +31,13 @@ export default async function handler(req, res) {
       const startBlock = parseFloat(block0.data.result);
       const endBlock = parseFloat(block1.data.result) || 'latest';
       
-      const contract = new ethers.Contract(address, abi.data.result, provider);
+      const contract = new ethers.Contract(token, abi, provider);
 
       const filter = contract.filters.Transfer();
       const filterQuery = await contract.queryFilter(filter, startBlock, endBlock);
 
-      const decimals = await contract.decimals();
-      const pair = await contract.uniswapV2Pair();
-
       // exceptions for wallet filtering
-      const tokenAddress = address.toLowerCase();
+      const tokenAddress = token.toLowerCase();
       const pairAddress = pair.toLowerCase();
       const burn = '0x000000000000000000000000000000000000dead';
 
@@ -62,7 +61,7 @@ export default async function handler(req, res) {
           transactionHash: t.transactionHash,
           from: t.args.from,
           to: t.args.to,
-          amount: ethers.utils.formatUnits(t.args.value.toString(), decimals),
+          amount: ethers.utils.formatUnits(t.args.amount.toString(), decimals),
           timestamp: await (async () => (await t.getBlock()).timestamp)()
         }
       }));

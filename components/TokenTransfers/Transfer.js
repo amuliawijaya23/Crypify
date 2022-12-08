@@ -15,10 +15,10 @@ import { useSelector } from 'react-redux';
 
 const Transfer = ({ transfer }) => {
 	// global state
-	const token = useSelector((state) => state.token.value);
+	const pool = useSelector((state) => state.pool.value);
 
-	const address = token?.profile?.address?.toLowerCase();
-	const pair = token?.profile?.pair?.toLowerCase();
+	const address = pool?.profile?.token0?.id?.toLowerCase();
+	const pair = pool?.profile?.address?.toLowerCase();
 	const transferFrom = transfer?.from?.toLowerCase();
 	const transferTo = transfer?.to?.toLowerCase();
 
@@ -49,7 +49,7 @@ const Transfer = ({ transfer }) => {
 					</Tooltip>}
 				<Tooltip title={transferFrom}>
 					<Typography component='span'>
-						{transferFrom === pair ? `Uniswap V2: ${token?.profile?.symbol}` : ` ${transferFrom?.slice(0, 4)} ...${transferFrom?.slice(35)}`}
+						{transferFrom === pair ? `${pool?.profile?.pool}: ${pool?.profile?.token0?.symbol}` : ` ${transferFrom?.slice(0, 4)} ...${transferFrom?.slice(35)}`}
 					</Typography>
 				</Tooltip>
 				<IconButton
@@ -66,7 +66,7 @@ const Transfer = ({ transfer }) => {
 					</Tooltip>}
 				<Tooltip title={transferTo}>
 					<Typography component='span'>
-						{transferTo === pair ? `Uniswap V2: ${token?.profile?.symbol}` : `${transferTo?.slice(0, 4)} ...${transferTo?.slice(35)}`}
+						{transferTo === pair ? `${pool?.profile?.pool}: ${pool?.profile?.token0?.symbol}` : `${transferTo?.slice(0, 4)} ...${transferTo?.slice(35)}`}
 					</Typography>
 				</Tooltip>
 				<IconButton

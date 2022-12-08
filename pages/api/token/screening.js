@@ -18,12 +18,12 @@ export default async function handler(req, res) {
       try {
       const address = req.body.address;
       
-      const abi = await axios.get(`https://api.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_KEY}`);
+      // const abi = await axios.get(`https://api.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_KEY}`);
 
-      const tokenContract = new ethers.Contract(address, abi.data.result, provider);
-      const decimals = await tokenContract.decimals();
-      const totalSupply = await (await tokenContract.totalSupply()).toString();
-      const pair = await tokenContract.uniswapV2Pair();
+      // const tokenContract = new ethers.Contract(address, abi.data.result, provider);
+      // const decimals = await tokenContract.decimals();
+      // const totalSupply = await (await tokenContract.totalSupply()).toString();
+      // const pair = await tokenContract.uniswapV2Pair();
 
       // token screening from honepot.is
       const browser = await puppeteer.launch({ headless: true });
@@ -64,13 +64,6 @@ export default async function handler(req, res) {
       await browser.close();
       
       const tokenInfo = {
-        address: address,
-        pair: pair,
-        name: await tokenContract.name(),
-        symbol: await tokenContract.symbol(),
-        decimals: decimals,
-        totalSupply: ethers.utils.formatUnits(totalSupply, decimals),
-        owner: await tokenContract.owner(),
         honeypotScreen: screeningData.result,
         buyTax: screeningData.buyTax,
         sellTax: screeningData.sellTax,

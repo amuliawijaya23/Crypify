@@ -20,12 +20,14 @@ export default async function handler(req, res) {
               symbol
               id
               decimals
+              totalSupply
             }
             token1 {
               name
               symbol
               id
               decimals
+              totalSupply
             }
             createdAtTimestamp
             createdAtBlockNumber
@@ -38,7 +40,7 @@ export default async function handler(req, res) {
 
         if (uniswapV2Data.data.data.pair) {
 
-          data = {...uniswapV2Data.data.data.pair};
+          data = { ...uniswapV2Data.data.data.pair, pool: `Uniswap V2` };
 
         } else {
 
@@ -50,12 +52,14 @@ export default async function handler(req, res) {
                 symbol
                 id
                 decimals
+                totalSupply
               }
               token1 {
                 name
                 symbol
                 id
                 decimals
+                totalSupply
               }
               createdAtTimestamp
               createdAtBlockNumber
@@ -64,7 +68,7 @@ export default async function handler(req, res) {
 
           const uniswapV3Data = await axios.post('https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3', { query: query });
 
-          data = {...uniswapV3Data.data.data.pool};
+          data = { ...uniswapV3Data.data.data.pool, pool: `Uniswap V3` };
         };
 
         const tokenAddress = data.token0.id;

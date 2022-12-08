@@ -13,13 +13,13 @@ const initialState = {
 };
 
 export const tokenSlice = createSlice({
-  name: 'token',
+  name: 'pool',
   initialState: initialState,
   reducers: {
-    setToken: (state, action) => {
+    setPool: (state, action) => {
       state.value = action.payload;
     },
-    setTokenProfile: (state, action) => {
+    setPoolProfile: (state, action) => {
       state.value.profile = action.payload;
     },
     setTransfersStartDate: (state, action) => {
@@ -34,19 +34,19 @@ export const tokenSlice = createSlice({
     setTransfersHolders: (state, action) => {
       state.value.transfers.holders = action.payload;
     },
-    resetToken: (state, action) => {
+    resetPool: (state, action) => {
       state.value = initialState;
     }
   }
 });
 
 export const { 
-  setToken, 
-  setTokenProfile, 
+  setPool, 
+  setPoolProfile, 
   setTransfersStartDate, 
   setTransfersEndDate, 
   setTransfersData,
   setTransfersHolders,
-  resetToken 
+  resetPool 
 } = tokenSlice.actions;
 export default tokenSlice.reducer;

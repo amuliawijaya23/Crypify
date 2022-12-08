@@ -6,7 +6,7 @@ import WalletIcon from '@mui/icons-material/Wallet';
 import { useSelector } from "react-redux"
 
 const Holders = ({ open, onClose }) => {
-  const holders = useSelector((state) => state?.token?.value?.transfers?.holders);
+  const holders = useSelector((state) => state?.pool?.value?.transfers?.holders);
 
   return (
     <Dialog open={open} onClose={onClose}>

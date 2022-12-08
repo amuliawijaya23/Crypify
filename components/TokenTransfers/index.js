@@ -36,7 +36,7 @@ import { useSelector } from 'react-redux';
 
 const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
   // global state
-  const transfers = useSelector((state) => state.token.value.transfers);
+  const transfers = useSelector((state) => state.pool.value.transfers);
 
   // local state
   const [page, setPage] = useState(0);
