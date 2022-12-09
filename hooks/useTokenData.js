@@ -46,16 +46,21 @@ export const useTokenData = () => {
 
       const { data } = await axios.post('/api/pool', { address: pairAddress });
 
-      const transfers = await axios.post('/api/token/transfers', { 
-        token: data?.token0?.id, 
-        decimals: data?.token0?.decimals, 
-        pair: pairAddress, 
-        start: start, 
-        end: end 
-      });
+      const [transfers, coinData] = await Promise.all([
+        axios.post('/api/token/transfers', { 
+          token: data?.token0?.id, 
+          decimals: data?.token0?.decimals, 
+          pair: pairAddress, 
+          start: start, 
+          end: end 
+        }),
+        axios.post('/api/token/data', { address: pairAddress })
+      ]);
+
+      const coinProfile = { ...data, token0: { ...data?.token0, price: coinData.data.price , liquidity: coinData.data.liquidity }, address: pairAddress }
 
       dispatch(setPool({
-        profile: { ...data, address: pairAddress },
+        profile: coinProfile,
         transfers: {
           start: start,
           end: end,
@@ -98,7 +103,14 @@ export const useTokenData = () => {
       const tokenAddress = pool?.profile?.token0?.id;
       const start = pool?.transfers?.start;
       const end = pool?.transfers?.end;
-      const { data } = await axios.post('/api/token/transfers', { address: tokenAddress, start: start, end: end });
+      const { data } = await axios.post('/api/token/transfers', { 
+        token: tokenAddress,
+        decimals: pool?.profile?.token0?.decimals,
+        pair: pool?.profile?.address,
+        start: start, 
+        end: end 
+      });
+
       dispatch(setTransfersData(data?.events));
       dispatch(setTransfersHolders(data?.holders));
       setLoadTransfers(false);
