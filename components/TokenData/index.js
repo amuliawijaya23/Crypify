@@ -12,8 +12,8 @@ import {
 	Typography,
 } from '@mui/material';
 
-// import NumericFormat from react-number-format;
-import { NumericFormat } from 'react-number-format';
+import GppGoodIcon from '@mui/icons-material/GppGood';
+import GppBadIcon from '@mui/icons-material/GppBad';
 
 // state management
 import { useSelector } from 'react-redux';
@@ -25,50 +25,38 @@ const TokenData = () => {
   return (
     <Card sx={{ width: '100%', height: '100%', p: 0.5 }}>
       <CardHeader
-				title={<b>{pool?.profile?.token0?.symbol} / {pool?.profile?.token1?.symbol}</b>}
+				title={<b>{parse(`${pool?.profile?.token0?.price}`)}</b>}
 				titleTypographyProps={{ variant: 'body1' }}
 			/>
-      <Divider/>
-      <CardContent>
-        <Typography component='div' variant='body2'>
-					<b>Total Supply: </b>
-					<NumericFormat 
-						value={pool?.profile?.token0?.totalSupply}
-						decimalScale={2}
-						displayType='text'
-					/>
-				</Typography>
-      </CardContent>
-      <Divider />
-      <CardContent>
-        <Typography component='div' variant='body2'>
-          <b>Price:</b> {parse(`${pool?.profile?.token0?.price}`)}
-        </Typography>
-      </CardContent>
       <Divider />
       <CardContent>
         <Typography component='div' variant='body2'>
           <b>Total Liquidity:</b> {pool?.profile?.token0?.liquidity}
         </Typography>
       </CardContent>
-      {/* <Divider />
+      <Divider />
       <CardContent>
         <Typography component='div' variant='body2'>
-          <b>Buy Tax:</b> {pool?.profile?.buyTax}
+          <b>Buy Tax:</b> {pool?.profile?.token0?.buyTax ? pool?.profile?.token0?.buyTax : 'N/A'}
         </Typography>
       </CardContent>
       <Divider />
       <CardContent>
         <Typography component='div' variant='body2'>
-          <b>Sell Tax:</b> {pool?.profile?.sellTax}
+          <b>Sell Tax:</b> {pool?.profile?.token0?.sellTax ? pool?.profile?.token0?.sellTax : 'N/A'}
         </Typography>
       </CardContent>
       <Divider />
       <CardContent>
-        <Typography component='div' variant='body2'>
-          <b>Honeypot Screening:</b> {pool?.profile?.honeypotScreen}
+        <Typography component='div' variant='body2' sx={{ my: 1 }}>
+          <b>Screening Result:</b>
         </Typography>
-      </CardContent> */}
+        <Typography component='div' variant='caption'>
+          {pool?.profile?.screenResult ? 
+          <><GppGoodIcon /> <b>Token is Sellable</b></> : 
+          <><GppBadIcon /> <b>Token is Not Sellable</b></>}
+        </Typography>
+      </CardContent>
     </Card>
   )
 }

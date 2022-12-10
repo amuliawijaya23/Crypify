@@ -46,7 +46,7 @@ export const useTokenData = () => {
 
       const { data } = await axios.post('/api/pool', { address: pairAddress });
 
-      const [transfers, coinData] = await Promise.all([
+      const [ transfers, coinData, screenData ] = await Promise.all([
         axios.post('/api/token/transfers', { 
           token: data?.token0?.id, 
           decimals: data?.token0?.decimals, 
@@ -58,10 +58,19 @@ export const useTokenData = () => {
         axios.post('/api/token/screening', { address: data?.token0?.id })
       ]);
 
-      const coinProfile = { ...data, token0: { ...data?.token0, price: coinData.data.price , liquidity: coinData.data.liquidity }, address: pairAddress }
-
       dispatch(setPool({
-        profile: coinProfile,
+        profile: { 
+          ...data, 
+          address: pairAddress,
+          screenResult: screenData.data.screenResult,
+          token0: { 
+            ...data?.token0, 
+            price: coinData.data.price , 
+            liquidity: coinData.data.liquidity,
+            buyTax: screenData.data.buyTax,
+            sellTax: screenData.data.sellTax
+          },
+        },
         transfers: {
           start: start,
           end: end,
