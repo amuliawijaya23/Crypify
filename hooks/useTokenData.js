@@ -54,7 +54,8 @@ export const useTokenData = () => {
           start: start, 
           end: end 
         }),
-        axios.post('/api/token/data', { address: pairAddress })
+        axios.post('/api/token/data', { address: pairAddress }),
+        axios.post('/api/token/screening', { address: data?.token0?.id })
       ]);
 
       const coinProfile = { ...data, token0: { ...data?.token0, price: coinData.data.price , liquidity: coinData.data.liquidity }, address: pairAddress }
