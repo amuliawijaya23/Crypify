@@ -1,17 +1,5 @@
-import axios from 'axios';
-
-// import ethers
-import { ethers } from 'ethers';
-
 // import puppeteer
 import puppeteer from 'puppeteer';
-
-// variables
-const ETHERSCAN_KEY = process.env.NEXT_PUBLIC_ETHERSCAN_KEY;
-const INFURA_URL = process.env.NEXT_PUBLIC_INFURA_URL;
-
-// ethers provider
-const provider = new ethers.providers.JsonRpcProvider(INFURA_URL);
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
