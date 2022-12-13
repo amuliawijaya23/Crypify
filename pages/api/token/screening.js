@@ -16,14 +16,21 @@ export default async function handler(req, res) {
       const screenData = await page.evaluate(() => {
         const honeypotScreening = document.querySelector('#shitcoin > div > div').innerText;
         const paragraphs = document.querySelectorAll('#shitcoin > div > p');
-        const taxes = document.querySelector(`#shitcoin > div > p:nth-child(${paragraphs.length + 1})`).innerText.split('\n');
-    
-        const buyTax = taxes[0].split(':')[1].trim();
-        const sellTax = taxes[0].split(':')[1].trim();
-    
         const screenResult =  (honeypotScreening === 'Does not seem like a honeypot.') ? true : false;
+
+        const result = { screenResult: screenResult };
+
+        if (honeypotScreening === 'Does not seem like a honeypot.') {
+          const taxes = document.querySelector(`#shitcoin > div > p:nth-child(${paragraphs.length + 1})`).innerText.split('\n');
+      
+          const buyTax = taxes[0].split(':')[1].trim();
+          const sellTax = taxes[1].split(':')[1].trim();
+
+          result.buyTax = buyTax;
+          result.sellTax = sellTax;
+        };
     
-        return { screenResult: screenResult, buyTax: buyTax, sellTax: sellTax };
+        return result;
       });
 
       await browser.close();
