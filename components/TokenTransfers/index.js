@@ -142,7 +142,7 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
 						</TableBody>
 					</Table>
 					{transfers?.data?.length < 1 && (
-						<Alert severity='warning' sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', m: 0.5 }}>No Transfer Found! Please select a different date and/or time.</Alert>
+						<Alert severity='info' sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', m: 0.5 }}>No Transfer Found! Please select a different date and/or time.</Alert>
 					)}
 				</TableContainer>
 				{transfers?.data?.length > 0 && (

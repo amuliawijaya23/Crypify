@@ -10,6 +10,7 @@ import {
 	CardContent,
 	Divider,
 	Typography,
+  Alert
 } from '@mui/material';
 
 import GppGoodIcon from '@mui/icons-material/GppGood';
@@ -53,8 +54,8 @@ const TokenData = () => {
         </Typography>
         <Typography component='div' variant='caption'>
           {pool?.profile?.screenResult ? 
-          <><GppGoodIcon /> <b>Token is Sellable</b></> : 
-          <><GppBadIcon /> <b>Token is Not Sellable</b></>}
+          <Alert severity='success'>Token is Sellable</Alert> : 
+          <Alert severity='warning'>Token is not Sellable</Alert>}
         </Typography>
       </CardContent>
     </Card>
