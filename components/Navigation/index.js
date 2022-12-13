@@ -219,11 +219,11 @@ export const Navigation = ({ login, logout }) => {
 				<DrawerHeader>
 					<Button variant='outlined' sx={{ borderRadius: '5px	' }}>
 						<Avatar
-							src='/ethereum.png'
+							src='/Uniswap_Logo.svg'
 							alt='network'
 							sx={{ width: '25px', height: '25px', mr: 1 }}
 						/>
-						Ethereum
+						Uniswap
 					</Button>
 				</DrawerHeader>
 				<Divider />

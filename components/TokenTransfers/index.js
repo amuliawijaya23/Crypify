@@ -23,6 +23,7 @@ import {
 	Paper,
 	Toolbar,
 	TextField,
+	Alert
  } from '@mui/material';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -135,13 +136,14 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
 							</TableRow>
 						</TableHead>
 						<TableBody>
-							{transfers?.data
-								?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-								.map((transfer, i) => (
-                	<Transfer key={`token-transfer-${i}`} transfer={transfer} />
-								))}
+							{transfers?.data?.length > 0 && (
+								transfers?.data?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+								.map((transfer, i) => (<Transfer key={`token-transfer-${i}`} transfer={transfer} />)))}
 						</TableBody>
 					</Table>
+					{transfers?.data?.length < 1 && (
+						<Alert severity='warning' sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', m: 0.5 }}>No Transfer Found! Please select a different date and/or time.</Alert>
+					)}
 				</TableContainer>
 				{transfers?.data?.length > 0 && (
 					<TablePagination
