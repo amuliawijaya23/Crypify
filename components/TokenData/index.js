@@ -13,8 +13,8 @@ import {
   Alert
 } from '@mui/material';
 
-import GppGoodIcon from '@mui/icons-material/GppGood';
-import GppBadIcon from '@mui/icons-material/GppBad';
+// import react number format
+import { NumericFormat } from 'react-number-format';
 
 // state management
 import { useSelector } from 'react-redux';
@@ -26,15 +26,16 @@ const TokenData = () => {
   return (
     <Card sx={{ width: '100%', height: '100%', p: 0.5 }}>
       <CardHeader
-				title={<b>{parse(`${pool?.profile?.token0?.price}`)}</b>}
+				title={
+        <b>
+          <NumericFormat 
+            value={pool?.profile?.token0?.price}
+            displayType='text'
+            prefix='$ '
+          />
+        </b>}
 				titleTypographyProps={{ variant: 'body1' }}
 			/>
-      <Divider />
-      <CardContent>
-        <Typography component='div' variant='body2'>
-          <b>Total Liquidity:</b> {pool?.profile?.token0?.liquidity}
-        </Typography>
-      </CardContent>
       <Divider />
       <CardContent>
         <Typography component='div' variant='body2'>
