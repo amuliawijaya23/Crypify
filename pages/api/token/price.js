@@ -30,6 +30,7 @@ export default async function handler(req, res) {
           price = Number(lead.split('$')[1]) + trail;
         } else {
           price = document.querySelector('#__next > div.sc-d08ac376-0.fAgomI > div.sc-d08ac376-4.gFnUlM > div.sc-d08ac376-9.cKBJSW > div.dexscan-detail-priceSection > div.priceSection-core > span.sc-e225a64a-0.ilVuwe > span').innerText;
+          price = Number(price.split('$')[1]);
         }
     
         return price;
