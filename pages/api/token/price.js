@@ -4,12 +4,16 @@ import puppeteer from 'puppeteer';
 export default async function handler(req, res) {
   if (req.method === "POST") {
       try {
-      const address = req.body.address;
+
+
+
+
+      const pairAddress = req.body.pairAddress;
 
       // get data from coinmarketcap
       const browser = await puppeteer.launch({ headless: true });
       const page = await browser.newPage();
-      const coinmarketcapURL = `https://coinmarketcap.com/dexscan/ethereum/${address}`
+      const coinmarketcapURL = `https://coinmarketcap.com/dexscan/ethereum/${pairAddress}`
       await page.goto(coinmarketcapURL, { waitUntil: 'networkidle0'});
       await page.waitForSelector('#__next > div.sc-d08ac376-0.fAgomI > div.sc-d08ac376-4.gFnUlM > div.sc-d08ac376-9.cKBJSW > div.dexscan-detail-priceSection > div.priceSection-core > span.sc-e225a64a-0.ilVuwe > span', { visible: true });
 

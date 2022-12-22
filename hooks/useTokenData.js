@@ -54,7 +54,13 @@ export const useTokenData = () => {
           start: start, 
           end: end 
         }),
-        axios.post('/api/token/price', { address: pairAddress }),
+        axios.post('/api/token/price', { 
+          pairAddress: pairAddress, 
+          tokenAddress: data?.token0?.id,
+          tokenDecimals: data?.token0?.decimals,
+          baseAddress: data?.tokoen1?.id,
+          baseDecimals: data?.token1?.decimals
+        }),
         axios.post('/api/token/screening', { address: data?.token0?.id })
       ]);
 
