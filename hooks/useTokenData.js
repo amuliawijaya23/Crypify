@@ -58,7 +58,7 @@ export const useTokenData = () => {
           pairAddress: pairAddress, 
           tokenAddress: data?.token0?.id,
           tokenDecimals: data?.token0?.decimals,
-          baseAddress: data?.tokoen1?.id,
+          baseAddress: data?.token1?.id,
           baseDecimals: data?.token1?.decimals
         }),
         axios.post('/api/token/screening', { address: data?.token0?.id })

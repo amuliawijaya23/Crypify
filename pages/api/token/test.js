@@ -32,49 +32,25 @@ export default async function handler(req, res) {
       let baseRoute;
       let baseTrade;
 
-      console.log('trade Price', trade.executionPrice.toSignificant(6));
-
       const price = await (async () => {
         switch (baseAddress) {
           case WETH:
             basePair = await Fetcher.fetchPairData(baseToken, usdcToken);
             baseRoute = new Route([basePair], baseToken);
-            baseTrade = new Trade(baseRoute, new TokenAmount(baseToken, BigInt(1E18)), TradeType.EXACT_INPUT)
+            baseTrade = new Trade(baseRoute, new TokenAmount(baseToken, BigInt(1E18)), TradeType.EXACT_INPUT);
             return baseTrade.executionPrice.toSignificant(12) * trade.executionPrice.toSignificant(12);
 
           case DAI:
-            const wethToken = new Token(ChainId.MAINNET, WETH, 18);
             basePair = await Fetcher.fetchPairData(baseToken, usdcToken);
             baseRoute = new Route([basePair], baseToken);
-            baseTrade = new Trade(baseRoute, new TokenAmount(baseToken, BigInt(1E18)), TradeType.EXACT_INPUT)
-
-            // const wethUsdc = await Fetcher.fetchPairData(wethToken, usdcToken);
-            // const wethUsdcRoute = new Route([wethUsdc], wethToken);
-            // const wethUsdcTrade = new Trade(wethUsdcRoute, new TokenAmount(wethToken, BigInt(1E18)), TradeType.EXACT_INPUT);
-
+            baseTrade = new Trade(baseRoute, new TokenAmount(baseToken, BigInt(1E18)), TradeType.EXACT_INPUT);
             return trade.executionPrice.toSignificant(12) * baseTrade.executionPrice.toSignificant(12);
-
-
-
-
-
-
-
 
           default:
             return trade.executionPrice.toSignificant(6);
         }
       })();
-
-
-
-
-
-      console.log('price', price);
-
-
-
-
+      
     res.send('ok');
 
 
