@@ -23,36 +23,36 @@ const TokenData = () => {
   // global state
   const pool = useSelector((state) => state.pool.value);
 
-  const formatPrice = (price) => {
-    // const priceInString = String(pool?.profile?.token0?.price);
-    console.log('price', Number(price));
-    const priceInString = String(price);
-    const wholeNumber = priceInString.split('.')[0];
-    const decimals = priceInString.split('.')[1];
+  // const formatPrice = (price) => {
+  //   // const priceInString = String(pool?.profile?.token0?.price);
+  //   console.log(price);
+  //   const priceInString = price;
+  //   const wholeNumber = priceInString.split('.')[0];
+  //   const decimals = priceInString.split('.')[1];
 
-    if (decimals) {
-      console.log('decimals', decimals)
-      let numberOfZero = 0;
-      let i = 0;
-      let trail = '';
+  //   if (decimals) {
+  //     console.log('decimals', decimals)
+  //     let numberOfZero = 0;
+  //     let i = 0;
+  //     let trail = '';
 
-      while (decimals[i] === '0') {
-        numberOfZero++;
-        i++;
-      };
+  //     while (decimals[i] === '0') {
+  //       numberOfZero++;
+  //       i++;
+  //     };
 
-      // if (numberOfZero > 3) {
-      //   return (
-      //     <span>{`$ ${wholeNumber}`}</span>
-      //   );
-      // };
+  //     // if (numberOfZero > 3) {
+  //     //   return (
+  //     //     <span>{`$ ${wholeNumber}`}</span>
+  //     //   );
+  //     // };
 
-      return numberOfZero;
+  //     return numberOfZero;
 
-    };
-  };
+  //   };
+  // };
 
-  console.log('test', formatPrice(0.00000000135006));
+  // console.log('test', formatPrice(String(pool?.profile?.token0?.price)));
 
 
   return (
@@ -60,12 +60,11 @@ const TokenData = () => {
       <CardHeader
 				title={
         <b>
-          {/* <NumericFormat 
+          <NumericFormat 
             value={pool?.profile?.token0?.price}
             displayType='text'
             prefix='$ '
-          /> */}
-
+          />
         </b>
         }
 				titleTypographyProps={{ variant: 'body1' }}

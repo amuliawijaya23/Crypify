@@ -23,7 +23,11 @@ import {
 	Paper,
 	Toolbar,
 	TextField,
-	Alert
+	Alert,
+	CardContent,
+	Divider,
+	List,
+	ListItem
  } from '@mui/material';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -38,6 +42,12 @@ import { useSelector } from 'react-redux';
 const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
   // global state
   const transfers = useSelector((state) => state.pool.value.transfers);
+
+	const totalTokenTransfer = transfers?.data.map((t) => Number(t?.amount)).reduce((a, b) => a + b, 0);
+
+	const noOfTrx = transfers?.data?.length;
+
+	const avgTokenAmount = totalTokenTransfer / noOfTrx;
 
   // local state
   const [page, setPage] = useState(0);
@@ -82,6 +92,28 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
   return (
 		<>
 			<Holders open={open} onClose={closeHolders} />
+			<Card>
+				<CardContent>
+					Total Amount: {totalTokenTransfer}
+				</CardContent>
+				<Divider />
+				<CardContent>
+					No of Trx: {noOfTrx} 
+				</CardContent>
+				<Divider />
+				<CardContent>
+					Average Trx Amount: {avgTokenAmount}
+				</CardContent>
+				<CardContent>
+					<List>
+						{transfers?.data?.filter((t) => t?.amount >= avgTokenAmount).map((tx, i) => (
+							<ListItem key={`trans-${i}`}>
+								{tx.transactionHash}
+							</ListItem>
+						))}
+					</List>
+				</CardContent>
+			</Card>
     	<Card>
 				<Toolbar>
 					<LocalizationProvider dateAdapter={AdapterDateFns}>
