@@ -22,10 +22,19 @@ const Transfer = ({ transfer }) => {
 	const transferFrom = transfer?.from?.toLowerCase();
 	const transferTo = transfer?.to?.toLowerCase();
 
-	const typeColor = transfer?.type === 'Buy' ? '#EDF7ED' : '#E57373';
+	const transferTypeColor = (() => {
+		switch (transfer?.type) {
+			case 'Buy':
+				return '#EDF7ED';
+			case 'Sell':
+				return '#E57373';
+			default:
+				return '#D4D1D1';
+		}
+	})();
 
   return (
-    <TableRow key={transfer?.transactionHash} sx={{backgroundColor: typeColor}}>
+    <TableRow key={transfer?.transactionHash} sx={{backgroundColor: transferTypeColor}}>
 			<TableCell component='th' scope='row'>
 				<Tooltip title={transfer?.transactionHash}>
 					<Typography component='span'>
@@ -43,11 +52,6 @@ const Transfer = ({ transfer }) => {
 				{formatDistanceToNow(fromUnixTime(transfer?.timestamp), {
 					addSuffix: true
 				})}
-			</TableCell>
-			<TableCell>
-				<Typography component='span' variant='body2' >
-					<b>{transfer?.type}</b>
-				</Typography>
 			</TableCell>
 			<TableCell component='th' scope='row'>
 				{(transferFrom === pair || transferFrom === address) &&

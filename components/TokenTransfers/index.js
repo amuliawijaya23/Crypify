@@ -157,9 +157,6 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
 									<b>Date</b>
 								</TableCell>
 								<TableCell>
-									<b>Type</b>
-								</TableCell>
-								<TableCell>
 									<b>From</b>
 								</TableCell>
 								<TableCell>
