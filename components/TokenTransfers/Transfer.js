@@ -22,8 +22,10 @@ const Transfer = ({ transfer }) => {
 	const transferFrom = transfer?.from?.toLowerCase();
 	const transferTo = transfer?.to?.toLowerCase();
 
+	const typeColor = transfer?.type === 'Buy' ? '#EDF7ED' : '#E57373';
+
   return (
-    <TableRow key={transfer?.transactionHash}>
+    <TableRow key={transfer?.transactionHash} sx={{backgroundColor: typeColor}}>
 			<TableCell component='th' scope='row'>
 				<Tooltip title={transfer?.transactionHash}>
 					<Typography component='span'>
@@ -43,8 +45,8 @@ const Transfer = ({ transfer }) => {
 				})}
 			</TableCell>
 			<TableCell>
-				<Typography component='span' variant='span' >
-					{transfer?.type}
+				<Typography component='span' variant='body2' >
+					<b>{transfer?.type}</b>
 				</Typography>
 			</TableCell>
 			<TableCell component='th' scope='row'>
