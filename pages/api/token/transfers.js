@@ -41,25 +41,17 @@ export default async function handler(req, res) {
       const pairAddress = pair.toLowerCase();
       const burn = '0x000000000000000000000000000000000000dead';
 
-      let wallets = [];
-
       const transfers = await Promise.all(filterQuery.map(async(t) => {
         const transferFrom = t.args.from.toLowerCase();
         const transferTo = t.args.to.toLowerCase();
         let type;
 
-        if (transferFrom !== tokenAddress && transferFrom !== pairAddress && transferFrom !== burn) {
-          wallets.push(transferFrom);
-          if (transferTo === pairAddress) {
-            type = 'Sell';
-          };
+        if (transferFrom !== tokenAddress && transferFrom !== pairAddress && transferFrom !== burn && transferTo === pairAddress) {
+          type = 'Sell';
         };
 
-        if (transferTo !== tokenAddress && transferTo !== pairAddress && transferTo !== burn) {
-          wallets.push(transferTo);
-          if (transferFrom === pairAddress) {
-            type = 'Buy';
-          };
+        if (transferTo !== tokenAddress && transferTo !== pairAddress && transferTo !== burn && transferFrom === pairAddress) {
+          type = 'Buy';
         };
 
         return {
@@ -74,11 +66,8 @@ export default async function handler(req, res) {
         }
       }));
 
-      wallets = [...new Set(wallets)];
-
       const data = {
-        events: transfers.sort((a, b) => b.timestamp - a.timestamp),
-        holders: wallets,
+        events: transfers.sort((a, b) => b.timestamp - a.timestamp)
       };
 
       res.send(data);

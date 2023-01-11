@@ -80,7 +80,6 @@ export const useTokenData = () => {
           start: start,
           end: end,
           data: transfers.data.events,
-          holders: transfers.data.holders
         }
       }));
 
