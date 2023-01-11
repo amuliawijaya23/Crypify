@@ -42,6 +42,11 @@ const Transfer = ({ transfer }) => {
 					addSuffix: true
 				})}
 			</TableCell>
+			<TableCell>
+				<Typography component='span' variant='span' >
+					{transfer?.type}
+				</Typography>
+			</TableCell>
 			<TableCell component='th' scope='row'>
 				{(transferFrom === pair || transferFrom === address) &&
 					<Tooltip title='Contract'>

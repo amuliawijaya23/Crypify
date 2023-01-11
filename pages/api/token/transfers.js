@@ -46,13 +46,20 @@ export default async function handler(req, res) {
       const transfers = await Promise.all(filterQuery.map(async(t) => {
         const transferFrom = t.args.from.toLowerCase();
         const transferTo = t.args.to.toLowerCase();
+        let type;
 
         if (transferFrom !== tokenAddress && transferFrom !== pairAddress && transferFrom !== burn) {
           wallets.push(transferFrom);
+          if (transferTo === pairAddress) {
+            type = 'Sell';
+          };
         };
 
         if (transferTo !== tokenAddress && transferTo !== pairAddress && transferTo !== burn) {
           wallets.push(transferTo);
+          if (transferFrom === pairAddress) {
+            type = 'Buy';
+          };
         };
 
         return {
@@ -61,6 +68,7 @@ export default async function handler(req, res) {
           transactionHash: t.transactionHash,
           from: t.args.from,
           to: t.args.to,
+          type: type,
           amount: ethers.utils.formatUnits(t.args.amount.toString(), decimals),
           timestamp: await (async () => (await t.getBlock()).timestamp)()
         }

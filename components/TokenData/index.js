@@ -23,38 +23,6 @@ const TokenData = () => {
   // global state
   const pool = useSelector((state) => state.pool.value);
 
-  // const formatPrice = (price) => {
-  //   // const priceInString = String(pool?.profile?.token0?.price);
-  //   console.log(price);
-  //   const priceInString = price;
-  //   const wholeNumber = priceInString.split('.')[0];
-  //   const decimals = priceInString.split('.')[1];
-
-  //   if (decimals) {
-  //     console.log('decimals', decimals)
-  //     let numberOfZero = 0;
-  //     let i = 0;
-  //     let trail = '';
-
-  //     while (decimals[i] === '0') {
-  //       numberOfZero++;
-  //       i++;
-  //     };
-
-  //     // if (numberOfZero > 3) {
-  //     //   return (
-  //     //     <span>{`$ ${wholeNumber}`}</span>
-  //     //   );
-  //     // };
-
-  //     return numberOfZero;
-
-  //   };
-  // };
-
-  // console.log('test', formatPrice(String(pool?.profile?.token0?.price)));
-
-
   return (
     <Card sx={{ width: '100%', height: '100%', p: 0.5 }}>
       <CardHeader

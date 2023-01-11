@@ -92,7 +92,7 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
   return (
 		<>
 			<Holders open={open} onClose={closeHolders} />
-			<Card>
+			{/* <Card>
 				<CardContent>
 					Total Amount: {totalTokenTransfer}
 				</CardContent>
@@ -113,7 +113,7 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
 						))}
 					</List>
 				</CardContent>
-			</Card>
+			</Card> */}
     	<Card>
 				<Toolbar>
 					<LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -155,6 +155,9 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
 								</TableCell>
 								<TableCell>
 									<b>Date</b>
+								</TableCell>
+								<TableCell>
+									<b>Type</b>
 								</TableCell>
 								<TableCell>
 									<b>From</b>
