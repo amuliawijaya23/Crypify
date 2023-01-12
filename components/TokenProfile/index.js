@@ -8,7 +8,8 @@ import {
 	Divider,
 	Typography,
 	Tooltip,
-	IconButton
+	IconButton,
+	Grid
 } from '@mui/material';
 
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -41,28 +42,31 @@ const TokenProfile = () => {
 			/>
       <Divider/>
       <CardContent>
-        <Typography component='div' variant='body2'>
-					<b>Address:</b> {`${pool?.profile?.token0?.id?.slice(0, 4)} ...${pool?.profile?.token0?.id?.slice(37)}`}
-					<IconButton
-						edge='end'
-						size='small'
-						onClick={() => navigator.clipboard.writeText(pool?.profile?.token0?.id)}>
-						<ContentCopyIcon sx={{ width: 15 }} />
-					</IconButton>
-				</Typography>
+				<Grid container>
+					<Grid item xs={6}>
+						<Typography component='div' variant='body2'>
+							<b>Address:</b> {`${pool?.profile?.token0?.id?.slice(0, 4)} ...${pool?.profile?.token0?.id?.slice(37)}`}
+							<IconButton
+								edge='end'
+								size='small'
+								onClick={() => navigator.clipboard.writeText(pool?.profile?.token0?.id)}>
+								<ContentCopyIcon sx={{ width: 15 }} />
+							</IconButton>
+						</Typography>
+					</Grid>
+					<Grid item xs={6}>
+						<Typography component='div' variant='body2'>
+							<b>Pair:</b> {`${pool?.profile?.address?.slice(0, 4)} ...${pool?.profile?.address?.slice(37)}`}
+							<IconButton
+								edge='end'
+								size='small'
+								onClick={() => navigator.clipboard.writeText(pool?.profile?.address)}>
+								<ContentCopyIcon sx={{ width: 15 }} />
+							</IconButton>
+						</Typography>
+					</Grid>
+				</Grid>
       </CardContent>
-      <Divider />
-			<CardContent>
-				<Typography component='div' variant='body2'>
-					<b>Pair:</b> {`${pool?.profile?.address?.slice(0, 4)} ...${pool?.profile?.address?.slice(37)}`}
-					<IconButton
-						edge='end'
-						size='small'
-						onClick={() => navigator.clipboard.writeText(pool?.profile?.address)}>
-						<ContentCopyIcon sx={{ width: 15 }} />
-					</IconButton>
-				</Typography>
-			</CardContent>
 			<Divider />
       <CardContent>
         <Typography component='div' variant='body2'>
