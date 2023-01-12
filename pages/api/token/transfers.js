@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getUnixTime } from 'date-fns';
 
 // import ethers
 import { ethers } from 'ethers';
@@ -66,8 +67,10 @@ export default async function handler(req, res) {
         }
       }));
 
+      const transactions = transfers.filter((t) => t.type === 'Buy' || t.type === 'Sell');
+
       const data = {
-        events: transfers.sort((a, b) => b.timestamp - a.timestamp)
+        events: transactions.sort((a, b) => b.timestamp - a.timestamp)
       };
 
       res.send(data);
