@@ -23,6 +23,8 @@ import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SearchIcon from '@mui/icons-material/Search';
 import StarIcon from '@mui/icons-material/Star';
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 
 // redux
 import { useSelector } from 'react-redux';
@@ -228,7 +230,7 @@ export const Navigation = ({ login, logout }) => {
 				</DrawerHeader>
 				<Divider />
 				<List>
-					{['Search', 'Favorites'].map((text, index) => {
+					{['Search', 'Favorites', 'Trading Log', 'Journal'].map((text, index) => {
 						const clickHandler = () => {
 							switch (index) {
 								case 0:
@@ -236,6 +238,9 @@ export const Navigation = ({ login, logout }) => {
 									break;
 								case 1:
 									console.log('test2');
+									break;
+								case 2:
+									router.push('/trading-log');
 									break;
 								default:
 									break;
@@ -251,6 +256,10 @@ export const Navigation = ({ login, logout }) => {
 													return <SearchIcon />;
 												case 1:
 													return <StarIcon />;
+												case 2:
+													return <ListAltIcon />;
+												case 3:
+													return <MenuBookIcon />;
 												default:
 													break;
 											}

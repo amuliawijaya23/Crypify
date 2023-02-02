@@ -24,10 +24,6 @@ import {
 	Toolbar,
 	TextField,
 	Alert,
-	CardContent,
-	Divider,
-	List,
-	ListItem
  } from '@mui/material';
 
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -92,28 +88,6 @@ const TokenTransfers = ({ loading, setStart, setEnd, getTokenTransfers }) => {
   return (
 		<>
 			<Holders open={open} onClose={closeHolders} />
-			{/* <Card>
-				<CardContent>
-					Total Amount: {totalTokenTransfer}
-				</CardContent>
-				<Divider />
-				<CardContent>
-					No of Trx: {noOfTrx} 
-				</CardContent>
-				<Divider />
-				<CardContent>
-					Average Trx Amount: {avgTokenAmount}
-				</CardContent>
-				<CardContent>
-					<List>
-						{transfers?.data?.filter((t) => t?.amount >= avgTokenAmount).map((tx, i) => (
-							<ListItem key={`trans-${i}`}>
-								{tx.transactionHash}
-							</ListItem>
-						))}
-					</List>
-				</CardContent>
-			</Card> */}
     	<Card>
 				<Toolbar>
 					<LocalizationProvider dateAdapter={AdapterDateFns}>
