@@ -14,10 +14,10 @@ import { useRouter } from 'next/router';
 import { useSelector, useDispatch } from 'react-redux';
 
 // reducers
-import { 
-  setPool, 
-  setTransfersStartDate, 
-  setTransfersEndDate, 
+import {
+  setPool,
+  setTransfersStartDate,
+  setTransfersEndDate,
   setTransfersData,
   setTransfersHolders,
   resetPool
@@ -38,7 +38,7 @@ export const useTokenData = () => {
   const [ loading, setLoading ] = useState(false);
   const [ loadTransfers, setLoadTransfers ] = useState(false);
 
-  const getTokenData = useCallback(async (pairAddress) => {
+  const getTokenData = useCallback(async(pairAddress) => {
     try {
       setLoading(true);
       const start = getUnixTime(subHours(new Date(), 24));
@@ -47,15 +47,15 @@ export const useTokenData = () => {
       const { data } = await axios.post('/api/pool', { address: pairAddress });
 
       const [ transfers, priceData, screenData ] = await Promise.all([
-        axios.post('/api/token/transfers', { 
-          token: data?.token0?.id, 
-          decimals: data?.token0?.decimals, 
-          pair: pairAddress, 
-          start: start, 
-          end: end 
+        axios.post('/api/token/transfers', {
+          token: data?.token0?.id,
+          decimals: data?.token0?.decimals,
+          pair: pairAddress,
+          start: start,
+          end: end
         }),
-        axios.post('/api/token/price', { 
-          pairAddress: pairAddress, 
+        axios.post('/api/token/price', {
+          pairAddress: pairAddress,
           tokenAddress: data?.token0?.id,
           tokenDecimals: data?.token0?.decimals,
           baseAddress: data?.token1?.id,
@@ -65,13 +65,13 @@ export const useTokenData = () => {
       ]);
 
       dispatch(setPool({
-        profile: { 
-          ...data, 
+        profile: {
+          ...data,
           address: pairAddress,
           screenResult: screenData.data.screenResult,
-          token0: { 
-            ...data?.token0, 
-            price: priceData.data.price, 
+          token0: {
+            ...data?.token0,
+            price: priceData.data.price,
             buyTax: screenData.data.buyTax,
             sellTax: screenData.data.sellTax
           },
@@ -93,8 +93,8 @@ export const useTokenData = () => {
 
   useEffect(() => {
     if (address) {
-      getTokenData(address)
-    };
+      getTokenData(address);
+    }
 
     return () => {
       dispatch(resetPool());
@@ -111,18 +111,18 @@ export const useTokenData = () => {
     dispatch(setTransfersEndDate(newEnd));
   };
 
-  const getTokenTransfers = async () => {
+  const getTokenTransfers = async() => {
     try {
       setLoadTransfers(true);
       const tokenAddress = pool?.profile?.token0?.id;
       const start = pool?.transfers?.start;
       const end = pool?.transfers?.end;
-      const { data } = await axios.post('/api/token/transfers', { 
+      const { data } = await axios.post('/api/token/transfers', {
         token: tokenAddress,
         decimals: pool?.profile?.token0?.decimals,
         pair: pool?.profile?.address,
-        start: start, 
-        end: end 
+        start: start,
+        end: end
       });
 
       dispatch(setTransfersData(data?.events));
@@ -134,7 +134,7 @@ export const useTokenData = () => {
     }
   };
 
-  const getHolderTransfers = async () => {
+  const getHolderTransfers = async() => {
     
   };
 
