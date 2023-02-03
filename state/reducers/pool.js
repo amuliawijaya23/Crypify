@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   value: {
@@ -40,13 +40,13 @@ export const tokenSlice = createSlice({
   }
 });
 
-export const { 
-  setPool, 
-  setPoolProfile, 
-  setTransfersStartDate, 
-  setTransfersEndDate, 
+export const {
+  setPool,
+  setPoolProfile,
+  setTransfersStartDate,
+  setTransfersEndDate,
   setTransfersData,
   setTransfersHolders,
-  resetPool 
+  resetPool
 } = tokenSlice.actions;
 export default tokenSlice.reducer;
