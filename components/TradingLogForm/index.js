@@ -42,6 +42,7 @@ const TradingLogForm = ({ open, handleClose }) => {
     setFee,
     setPriceUSD,
     getTokenData,
+    addTransaction,
     resetForm
   } = useTradingForm();
 
@@ -137,7 +138,9 @@ const TradingLogForm = ({ open, handleClose }) => {
               variant='outlined'
               sx={{ my: 1 }}
               customInput={TextField}
-              onChange={(e) => setAmount(e.target.value)}
+              onValueChange={({ formattedValue, value, floatValue }) => {
+                setAmount(floatValue);
+              }}
             />
             <NumericFormat
               value={price}
@@ -147,11 +150,14 @@ const TradingLogForm = ({ open, handleClose }) => {
               fullWidth
               label='Price'
               size='small'
+              displayType='input'
               margin='dense'
               variant='outlined'
               sx={{ my: 1 }}
               customInput={TextField}
-              onChange={(e) => setPrice(e.target.value)}
+              onValueChange={({ formattedValue, value, floatValue }) => {
+                setPrice(floatValue);
+              }}
             />
           </Grid>
           <Grid item xs={6}>
@@ -167,7 +173,9 @@ const TradingLogForm = ({ open, handleClose }) => {
               variant='outlined'
               sx={{ my: 1 }}
               customInput={TextField}
-              onChange={(e) => setPriceUSD(e.target.value)}
+              onValueChange={({ formattedValue, value, floatValue }) => {
+                setPriceUSD(floatValue);
+              }}
             />
             <NumericFormat
               label='Transaction Fee'
@@ -181,7 +189,9 @@ const TradingLogForm = ({ open, handleClose }) => {
               variant='outlined'
               sx={{ my: 1 }}
               customInput={TextField}
-              onChange={(e) => setFee(e.target.value)}
+              onValueChange={({ formattedValue, value, floatValue }) => {
+                setFee(floatValue);
+              }}
             />
           </Grid>
         </Grid>
@@ -190,7 +200,7 @@ const TradingLogForm = ({ open, handleClose }) => {
         <Button color='error' variant='outlined' onClick={handleFormOnClose}>
           Cancel
         </Button>
-        <Button color='success' variant='outlined'>
+        <Button color='success' variant='outlined' onClick={addTransaction}>
           Confirm
         </Button>
       </DialogActions>

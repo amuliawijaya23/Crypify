@@ -4,6 +4,18 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setPoolProfile, resetPool } from '../state/reducers/pool';
 
+import { db } from '../firebase-config';
+import {
+  collection,
+  query,
+  where,
+  addDoc,
+  doc,
+  getDocs,
+  updateDoc,
+  getDoc
+} from 'firebase/firestore';
+
 let cancelToken;
 
 const useTradingForm = () => {
@@ -16,6 +28,7 @@ const useTradingForm = () => {
   const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.value);
   const pool = useSelector((state) => state.pool.value.profile);
 
   const resetForm = () => {
@@ -71,6 +84,55 @@ const useTradingForm = () => {
     }
   };
 
+  const addTransaction = async () => {
+    if (pool?.address && price && amount && priceUSD && date) {
+      const assetsRef = collection(db, 'assets');
+      const assetQuery = await query(assetsRef, where('address', '==', pool.address));
+      const queryResult = await getDocs(assetQuery);
+      const asset = queryResult.docs;
+
+      let assetDocId;
+
+      if (asset.length < 1) {
+        const newDoc = await addDoc(assetsRef, {
+          address: pool.address,
+          // eslint-disable-next-line camelcase
+          token_address: pool.token0.id,
+          name: pool.token0.name,
+          pool: pool.pool,
+          users: [user.data.uid],
+          links: [
+            `https://www.dextools.io/app/en/ether/pair-explorer/${pool.address}`,
+            `https://etherscan.io/token/${pool.token0.id}`,
+            `https://tokensniffer.com/token/eth/${pool.token0.id}`
+          ],
+          // eslint-disable-next-line camelcase
+          date_added: date
+        });
+        assetDocId = newDoc.id;
+      } else {
+        assetDocId = asset[0].id;
+        const holders = asset.map((a) => ({ ...a.data() }.users));
+        if (holders.indexOf(user.data.uid) === -1) {
+          const newHolders = [...holders, user.data.uid];
+          const assetDoc = doc(db, 'assets', assetDocId);
+          await updateDoc(assetDoc, { users: newHolders });
+        }
+      }
+      const transactionsRef = collection(db, `assets/${assetDocId}/transactions`);
+      await addDoc(transactionsRef, {
+        date: date,
+        user: user.data.uid,
+        price: price,
+        fee: fee,
+        // eslint-disable-next-line camelcase
+        total_price_usd: priceUSD,
+        // eslint-disable-next-line camelcase
+        is_buy: true
+      });
+    }
+  };
+
   return {
     pair,
     date,
@@ -85,6 +147,7 @@ const useTradingForm = () => {
     setFee,
     setPriceUSD,
     getTokenData,
+    addTransaction,
     resetForm
   };
 };
