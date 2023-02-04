@@ -1,11 +1,11 @@
-import { use, useState } from 'react';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 // import from MUI
 import { alpha } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
 import {
   Box,
-  Typography,
   Table,
   TableBody,
   TableCell,
@@ -29,12 +29,15 @@ import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 
 import TradingLogForm from '../../components/TradingLogForm';
+import Trades from '../../components/Trades';
 
 // import custom hook
 import useTradingData from '../../hooks/useTradingData';
 
 const TradingLog = () => {
   const { selected } = useTradingData();
+
+  const assets = useSelector((state) => state.trades.value.assets);
 
   // Table state
   const [order, setOrder] = useState('asc');
@@ -136,6 +139,7 @@ const TradingLog = () => {
                       }}
                     />
                   </TableCell>
+                  <TableCell />
                   {['Last Transaction', 'Buy Date', 'Token', 'Amount', 'Profit/Loss'].map(
                     (column, i) => (
                       <TableCell
@@ -162,7 +166,11 @@ const TradingLog = () => {
                   </TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody></TableBody>
+              <TableBody>
+                {assets?.map((a, i) => (
+                  <Trades key={`trade-${i}`} asset={a} index={i} />
+                ))}
+              </TableBody>
             </Table>
           </TableContainer>
         </Grid>
