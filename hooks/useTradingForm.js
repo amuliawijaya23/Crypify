@@ -112,7 +112,7 @@ const useTradingForm = () => {
         assetDocId = newDoc.id;
       } else {
         assetDocId = asset[0].id;
-        const holders = asset.map((a) => ({ ...a.data() }.users));
+        const holders = asset[0].data().users;
         if (holders.indexOf(user.data.uid) === -1) {
           const newHolders = [...holders, user.data.uid];
           const assetDoc = doc(db, 'assets', assetDocId);
