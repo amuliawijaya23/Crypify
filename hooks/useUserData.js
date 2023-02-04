@@ -1,6 +1,3 @@
-// react hooks
-import { useEffect } from 'react';
-
 // state management
 import { useDispatch } from 'react-redux';
 
@@ -13,24 +10,6 @@ import { login, logout } from '../state/reducers/user';
 
 export const useUserData = () => {
   const dispatch = useDispatch();
-
-  // const array = ['Marry', 'James', 'Marry', 'Mike', 'Katie', 'Marry', 'Jimmy', 'Mike', 'Rose', 'Sam', 'Marry'];
-  // console.log('Array', array);
-
-  // const unique = [...new Set(array)];
-
-  // console.log('UNIQUE', unique);
-
-  useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem('user'));
-    if (userData) {
-      dispatch(login(userData));
-    }
-
-    return () => {
-      dispatch(logout());
-    };
-  }, [dispatch]);
 
   const signInWithGoogle = async () => {
     try {

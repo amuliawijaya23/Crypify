@@ -32,6 +32,8 @@ import { useSelector } from 'react-redux';
 // NEXT router
 import { useRouter } from 'next/router';
 
+import { useUserData } from '../../hooks/useUserData';
+
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
@@ -140,7 +142,8 @@ const NavDrawer = styled(Drawer, {
   })
 }));
 
-export const Navigation = ({ login, logout }) => {
+export const Navigation = () => {
+  const { signInWithGoogle, signOutFromGoogle } = useUserData();
   // set router
   const router = useRouter();
   // Global state
@@ -182,7 +185,7 @@ export const Navigation = ({ login, logout }) => {
   };
 
   const userHandler = () => {
-    user ? logout() : login();
+    user ? signOutFromGoogle() : signInWithGoogle();
   };
 
   return (

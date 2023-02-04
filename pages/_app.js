@@ -9,31 +9,32 @@ import { styled } from '@mui/material/styles';
 import { Navigation } from '../components/Navigation';
 
 // import custom hooks
-import { useUserData } from '../hooks/useUserData';
+import useAppData from '../hooks/useAppData';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
-	display: 'flex',
-	alignItems: 'center',
-	justifyContent: 'flex-end',
-	padding: theme.spacing(0, 1),
-	// necessary for content to be below app bar
-	...theme.mixins.toolbar
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar
 }));
 
+// eslint-disable-next-line func-style
 function MyApp({ Component, pageProps }) {
-	const { signInWithGoogle, signOutFromGoogle } = useUserData();
+  useAppData();
   return (
     <Provider store={store}>
-      <Box sx={{display: 'flex'}}>
+      <Box sx={{ display: 'flex' }}>
         <CssBaseline />
-        <Navigation login={signInWithGoogle} logout={signOutFromGoogle} />
-				<Box component='main' sx={{ flexGrow: 1, p: 2, mt: 2 }}>
-					<DrawerHeader />
-					<Component {...pageProps} />
-				</Box>
+        <Navigation />
+        <Box component='main' sx={{ flexGrow: 1, p: 2, mt: 2 }}>
+          <DrawerHeader />
+          <Component {...pageProps} />
+        </Box>
       </Box>
     </Provider>
-    )
+  );
 }
 
 export default wrapper.withRedux(MyApp);

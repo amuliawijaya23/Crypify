@@ -12,9 +12,12 @@ export const tokenSlice = createSlice({
   reducers: {
     setAssets: (state, action) => {
       state.value.assets = action.payload;
+    },
+    clearAssets: (state, action) => {
+      state.value = initialState;
     }
   }
 });
 
-export const { setAssets } = tokenSlice.actions;
+export const { setAssets, clearAssets } = tokenSlice.actions;
 export default tokenSlice.reducer;

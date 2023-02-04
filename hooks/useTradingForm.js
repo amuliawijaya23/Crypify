@@ -5,16 +5,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setPoolProfile, resetPool } from '../state/reducers/pool';
 
 import { db } from '../firebase-config';
-import {
-  collection,
-  query,
-  where,
-  addDoc,
-  doc,
-  getDocs,
-  updateDoc,
-  getDoc
-} from 'firebase/firestore';
+import { collection, query, where, addDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
 
 let cancelToken;
 
@@ -125,6 +116,7 @@ const useTradingForm = () => {
         date: date,
         user: user.data.uid,
         price: price,
+        amount: amount,
         fee: fee,
         // eslint-disable-next-line camelcase
         total_price_usd: priceUSD,
