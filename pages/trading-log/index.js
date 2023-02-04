@@ -30,12 +30,17 @@ import SearchIcon from '@mui/icons-material/Search';
 
 import TradingLogForm from '../../components/TradingLogForm';
 
+// import custom hook
+import useTradingData from '../../hooks/useTradingData';
+
 const TradingLog = () => {
+  const { selected } = useTradingData();
+
+  // Table state
   const [order, setOrder] = useState('asc');
   const [orderBy, setOrderBy] = useState('Last Transaction');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-  const [selected, setSelected] = useState([]);
   const [search, setSearch] = useState('');
   const [searchBar, setSearchBar] = useState(false);
   const [open, setOpen] = useState(false);

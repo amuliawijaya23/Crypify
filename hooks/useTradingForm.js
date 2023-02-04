@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { setPoolProfile, resetPool } from '../state/reducers/pool';
@@ -48,8 +48,9 @@ const useTradingForm = () => {
 
   const getTokenData = async (address) => {
     try {
-      setPair(address);
       setLoading(true);
+      setPair(address);
+      dispatch(setPoolProfile({}));
       if (typeof cancelToken !== typeof undefined) {
         cancelToken.cancel('Canceling previous search request');
       }
