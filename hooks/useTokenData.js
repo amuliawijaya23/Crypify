@@ -35,61 +35,65 @@ export const useTokenData = () => {
   const pool = useSelector((state) => state.pool.value);
 
   // local state
-  const [ loading, setLoading ] = useState(false);
-  const [ loadTransfers, setLoadTransfers ] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loadTransfers, setLoadTransfers] = useState(false);
 
-  const getTokenData = useCallback(async(pairAddress) => {
-    try {
-      setLoading(true);
-      const start = getUnixTime(subHours(new Date(), 24));
-      const end = getUnixTime(new Date());
+  const getTokenData = useCallback(
+    async (pairAddress) => {
+      try {
+        setLoading(true);
+        const start = getUnixTime(subHours(new Date(), 24));
+        const end = getUnixTime(new Date());
 
-      const { data } = await axios.post('/api/pool', { address: pairAddress });
+        const { data } = await axios.post('/api/pool', { address: pairAddress });
 
-      const [ transfers, priceData, screenData ] = await Promise.all([
-        axios.post('/api/token/transfers', {
-          token: data?.token0?.id,
-          decimals: data?.token0?.decimals,
-          pair: pairAddress,
-          start: start,
-          end: end
-        }),
-        axios.post('/api/token/price', {
-          pairAddress: pairAddress,
-          tokenAddress: data?.token0?.id,
-          tokenDecimals: data?.token0?.decimals,
-          baseAddress: data?.token1?.id,
-          baseDecimals: data?.token1?.decimals
-        }),
-        axios.post('/api/token/screening', { address: data?.token0?.id })
-      ]);
+        const [transfers, priceData, screenData] = await Promise.all([
+          axios.post('/api/token/transfers', {
+            token: data?.token0?.id,
+            decimals: data?.token0?.decimals,
+            pair: pairAddress,
+            start: start,
+            end: end
+          }),
+          axios.post('/api/token/price', {
+            pairAddress: pairAddress,
+            tokenAddress: data?.token0?.id,
+            tokenDecimals: data?.token0?.decimals,
+            baseAddress: data?.token1?.id,
+            baseDecimals: data?.token1?.decimals
+          }),
+          axios.post('/api/token/screening', { address: data?.token0?.id })
+        ]);
 
-      dispatch(setPool({
-        profile: {
-          ...data,
-          address: pairAddress,
-          screenResult: screenData.data.screenResult,
-          token0: {
-            ...data?.token0,
-            price: priceData.data.price,
-            buyTax: screenData.data.buyTax,
-            sellTax: screenData.data.sellTax
-          },
-        },
-        transfers: {
-          start: start,
-          end: end,
-          data: transfers.data.events,
-        }
-      }));
+        dispatch(
+          setPool({
+            profile: {
+              ...data,
+              address: pairAddress,
+              screenResult: screenData.data.screenResult,
+              token0: {
+                ...data?.token0,
+                price: priceData.data.price,
+                buyTax: screenData.data.buyTax,
+                sellTax: screenData.data.sellTax
+              }
+            },
+            transfers: {
+              start: start,
+              end: end,
+              data: transfers.data.events
+            }
+          })
+        );
 
-      setLoading(false);
-
-    } catch (error) {
-      setLoading(false);
-      console.error(error.response ? error.response.body : error);
-    }
-  }, [dispatch]);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+        console.error(error.response ? error.response.body : error);
+      }
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
     if (address) {
@@ -111,7 +115,7 @@ export const useTokenData = () => {
     dispatch(setTransfersEndDate(newEnd));
   };
 
-  const getTokenTransfers = async() => {
+  const getTokenTransfers = async () => {
     try {
       setLoadTransfers(true);
       const tokenAddress = pool?.profile?.token0?.id;
@@ -134,9 +138,7 @@ export const useTokenData = () => {
     }
   };
 
-  const getHolderTransfers = async() => {
-    
-  };
+  const getHolderTransfers = async () => {};
 
   return {
     loading,
