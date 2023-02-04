@@ -8,6 +8,9 @@ import fromUnixTime from 'date-fns/fromUnixTime';
 import Transfer from './Transfer';
 import Holders from './Holders';
 
+// import NumericFormat from react-number-format;
+import { NumericFormat } from 'react-number-format';
+
 // import from MUI
 import {
   Card,

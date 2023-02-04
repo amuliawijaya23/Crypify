@@ -5,7 +5,7 @@
     "node": true,
     "mocha": true
   },
-  "extends": ["eslint:recommended", "plugin:react/jsx-runtime"],
+  "extends": ["eslint:recommended", "next/core-web-vitals", "plugin:react/jsx-runtime"],
   "globals": {
     "Atomics": "readonly",
     "SharedArrayBuffer": "readonly"
