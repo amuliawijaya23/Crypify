@@ -15,6 +15,11 @@ import {
   Checkbox,
   Collapse
 } from '@mui/material';
+import ShowChartIcon from '@mui/icons-material/ShowChart';
+import DataArrayIcon from '@mui/icons-material/DataArray';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import AddIcon from '@mui/icons-material/Add';
+import RemooveIcon from '@mui/icons-material/Remove';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
@@ -68,7 +73,31 @@ const Trades = ({ asset, index }) => {
           {sellPriceUSD - (buyPriceUSD + totalFee)}
         </TableCell>
         <TableCell align='right' padding='normal'>
-          PLACEHOLDER
+          <Tooltip title='Buy'>
+            <IconButton size='small'>
+              <AddIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title='Sell'>
+            <IconButton size='small'>
+              <RemooveIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title='Chart'>
+            <IconButton size='small'>
+              <ShowChartIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title='Verify Honeypot, Contract and LP Lock'>
+            <IconButton size='small'>
+              <VerifiedUserIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title='Etherscan'>
+            <IconButton size='small'>
+              <DataArrayIcon />
+            </IconButton>
+          </Tooltip>
         </TableCell>
       </TableRow>
       <TableRow>
