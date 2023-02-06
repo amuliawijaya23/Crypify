@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 
 // import from MUI
@@ -29,15 +29,23 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 const Trades = ({ asset, index }) => {
   const [open, setOpen] = useState(false);
 
-  const buy = asset.transactions.filter((t) => t.is_buy);
-  const sell = asset.transactions.filter((t) => !t.is_buy);
+  const assetStatistics = useMemo(() => {
+    const buy = asset.transactions.filter((t) => t.is_buy);
+    const sell = asset.transactions.filter((t) => !t.is_buy);
+    const totalFee = asset.transactions.map((t) => t.fee).reduce((a, b) => a + b, 0);
 
-  const amountPurchased = buy.map((t) => t.amount).reduce((a, b) => a + b, 0);
-  const amountSold = sell.map((t) => t.amount).reduce((a, b) => a + b, 0);
+    const amountPurchased = buy.map((t) => t.amount).reduce((a, b) => a + b, 0);
+    const amountSold = sell.map((t) => t.amount).reduce((a, b) => a + b, 0);
 
-  const totalFee = asset.transactions.map((t) => t.fee).reduce((a, b) => a + b, 0);
-  const buyPriceUSD = buy.map((t) => t.total_price_usd).reduce((a, b) => a + b, 0);
-  const sellPriceUSD = sell.map((t) => t.total_price_usd).reduce((a, b) => a + b, 0);
+    const buyPriceUSD = buy.map((t) => t.total_price_usd).reduce((a, b) => a + b, 0);
+    const sellPriceUSD = sell.map((t) => t.total_price_usd).reduce((a, b) => a + b, 0);
+
+    return {
+      amount: amountPurchased - amountSold,
+      profit: sellPriceUSD - (buyPriceUSD + totalFee)
+    };
+  }, [asset.transactions]);
+
   return (
     <>
       <TableRow key={`row-${index}`}>
@@ -67,10 +75,10 @@ const Trades = ({ asset, index }) => {
           {asset.name}
         </TableCell>
         <TableCell align='left' padding='normal'>
-          {amountPurchased - amountSold}
+          {assetStatistics.amount}
         </TableCell>
         <TableCell align='left' padding='normal'>
-          {sellPriceUSD - (buyPriceUSD + totalFee)}
+          {assetStatistics.profit}
         </TableCell>
         <TableCell align='right' padding='normal'>
           <Tooltip title='Buy'>

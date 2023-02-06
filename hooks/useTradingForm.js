@@ -17,6 +17,7 @@ const useTradingForm = () => {
   const [fee, setFee] = useState(0);
   const [priceUSD, setPriceUSD] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.value);
@@ -31,6 +32,11 @@ const useTradingForm = () => {
     setFee(0);
     setPriceUSD(0);
     setLoading(false);
+    setError('');
+  };
+
+  const resetErrorAlert = () => {
+    setError('');
   };
 
   const handleDateChange = (input) => {
@@ -41,7 +47,6 @@ const useTradingForm = () => {
     try {
       setLoading(true);
       setPair(address);
-      dispatch(setPoolProfile({}));
       if (typeof cancelToken !== typeof undefined) {
         cancelToken.cancel('Canceling previous search request');
       }
@@ -51,24 +56,29 @@ const useTradingForm = () => {
         address: address,
         cancelToken: cancelToken.token
       });
-      const price = await axios.post('/api/token/price', {
-        pairAddress: address,
-        tokenAddress: data.token0.id,
-        tokenDecimals: data.token0.decimals,
-        baseAddress: data.token1.id,
-        baseDecimals: data.token1.decimals,
-        cancelToken: cancelToken.token
-      });
-      const poolData = {
-        ...data,
-        address: address,
-        token0: {
-          ...data.token0,
-          price: price.data.price
-        }
-      };
-      dispatch(setPoolProfile(poolData));
-      setPrice(price.data.price);
+
+      if (data.pool) {
+        const price = await axios.post('/api/token/price', {
+          pairAddress: address,
+          tokenAddress: data.token0.id,
+          tokenDecimals: data.token0.decimals,
+          baseAddress: data.token1.id,
+          baseDecimals: data.token1.decimals,
+          cancelToken: cancelToken.token
+        });
+        const poolData = {
+          ...data,
+          address: address,
+          token0: {
+            ...data.token0,
+            price: price.data.price
+          }
+        };
+        dispatch(setPoolProfile(poolData));
+        setPrice(price.data.price);
+      } else {
+        dispatch(resetPool());
+      }
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -77,52 +87,101 @@ const useTradingForm = () => {
   };
 
   const addTransaction = async () => {
-    if (pool?.address && price && amount && priceUSD && date) {
-      const assetsRef = collection(db, 'assets');
-      const assetQuery = await query(assetsRef, where('address', '==', pool.address));
-      const queryResult = await getDocs(assetQuery);
-      const asset = queryResult.docs;
+    try {
+      if (pool?.address && price && amount && priceUSD && date) {
+        const assetsRef = collection(db, 'assets');
+        const assetQuery = await query(assetsRef, where('address', '==', pool.address));
+        const queryResult = await getDocs(assetQuery);
+        const asset = queryResult.docs;
 
-      let assetDocId;
+        let assetDocId;
 
-      if (asset.length < 1) {
-        const newDoc = await addDoc(assetsRef, {
-          address: pool.address,
+        if (asset.length < 1) {
+          const newDoc = await addDoc(assetsRef, {
+            address: pool.address,
+            // eslint-disable-next-line camelcase
+            token_address: pool.token0.id,
+            name: pool.token0.name,
+            pool: pool.pool,
+            users: [user.data.uid],
+            links: [
+              `https://www.dextools.io/app/en/ether/pair-explorer/${pool.address}`,
+              `https://etherscan.io/token/${pool.token0.id}`,
+              `https://tokensniffer.com/token/eth/${pool.token0.id}`
+            ],
+            // eslint-disable-next-line camelcase
+            date_added: date
+          });
+          assetDocId = newDoc.id;
+        } else {
+          assetDocId = asset[0].id;
+          const holders = asset[0].data().users;
+          if (holders.indexOf(user.data.uid) === -1) {
+            const newHolders = [...holders, user.data.uid];
+            const assetDoc = doc(db, 'assets', assetDocId);
+            await updateDoc(assetDoc, { users: newHolders });
+          }
+        }
+        const transactionsRef = collection(db, `assets/${assetDocId}/transactions`);
+        await addDoc(transactionsRef, {
+          date: date,
+          user: user.data.uid,
+          price: price,
+          amount: amount,
+          fee: fee,
           // eslint-disable-next-line camelcase
-          token_address: pool.token0.id,
-          name: pool.token0.name,
-          pool: pool.pool,
-          users: [user.data.uid],
-          links: [
-            `https://www.dextools.io/app/en/ether/pair-explorer/${pool.address}`,
-            `https://etherscan.io/token/${pool.token0.id}`,
-            `https://tokensniffer.com/token/eth/${pool.token0.id}`
-          ],
+          total_price_usd: priceUSD,
           // eslint-disable-next-line camelcase
-          date_added: date
+          is_buy: true
         });
-        assetDocId = newDoc.id;
       } else {
-        assetDocId = asset[0].id;
-        const holders = asset[0].data().users;
-        if (holders.indexOf(user.data.uid) === -1) {
-          const newHolders = [...holders, user.data.uid];
-          const assetDoc = doc(db, 'assets', assetDocId);
-          await updateDoc(assetDoc, { users: newHolders });
+        if (pair) {
+          setError('Please enter a valid pair address');
+        } else {
+          let errorPrompt = 'Fill in the ';
+
+          const reqFields = [
+            {
+              field: 'Pair Address',
+              isFilled: Boolean(pool?.address)
+            },
+            {
+              field: 'Price',
+              isFilled: Boolean(price)
+            },
+            {
+              field: 'Amount',
+              isFilled: Boolean(amount)
+            },
+            {
+              field: 'Price USD',
+              isFilled: Boolean(priceUSD)
+            },
+            {
+              field: 'Transaction Fee',
+              isFilled: Boolean(fee)
+            },
+            {
+              field: 'Date',
+              isFilled: Boolean(date)
+            }
+          ];
+
+          const missingFields = reqFields.filter((f) => !f.isFilled);
+          for (const [i, f] of missingFields.entries()) {
+            if (i === missingFields.length - 1) {
+              i > 0 ? (errorPrompt += ` and ${f.field}`) : (errorPrompt += `${f.field}`);
+            } else {
+              i > 0 ? (errorPrompt += `, ${f.field}`) : (errorPrompt += `${f.field}`);
+            }
+          }
+
+          errorPrompt += ' field to proceed.';
+          setError(errorPrompt);
         }
       }
-      const transactionsRef = collection(db, `assets/${assetDocId}/transactions`);
-      await addDoc(transactionsRef, {
-        date: date,
-        user: user.data.uid,
-        price: price,
-        amount: amount,
-        fee: fee,
-        // eslint-disable-next-line camelcase
-        total_price_usd: priceUSD,
-        // eslint-disable-next-line camelcase
-        is_buy: true
-      });
+    } catch (error) {
+      console.error(error.response ? error.response.body : error);
     }
   };
 
@@ -134,6 +193,8 @@ const useTradingForm = () => {
     fee,
     priceUSD,
     loading,
+    error,
+    resetErrorAlert,
     handleDateChange,
     setAmount,
     setPrice,

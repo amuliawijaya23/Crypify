@@ -93,6 +93,7 @@ export default async function handler(req, res) {
 
         res.send(data);
       }
+      res.end();
     } catch (error) {
       console.error(error.response ? error.response.body : error);
     }
