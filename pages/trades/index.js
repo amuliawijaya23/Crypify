@@ -28,13 +28,13 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 
-import TradingLogForm from '../../components/TradingLogForm';
-import Trades from '../../components/Trades';
+import TradeForm from '../../components/TradeForm';
+import Trade from '../../components/Trade';
 
 // import custom hook
-import useTradingData from '../../hooks/useTradingData';
+import useTradingData from '../../hooks/useTradeData';
 
-const TradingLog = () => {
+const Trades = () => {
   const { selected } = useTradingData();
 
   const assets = useSelector((state) => state.trades.value.assets);
@@ -73,7 +73,7 @@ const TradingLog = () => {
 
   return (
     <>
-      <TradingLogForm open={open} handleClose={() => setOpen(false)} />
+      <TradeForm open={open} handleClose={() => setOpen(false)} />
       <Grid container>
         <Grid item xs={12}>
           <Toolbar
@@ -168,7 +168,7 @@ const TradingLog = () => {
               </TableHead>
               <TableBody>
                 {assets?.map((a, i) => (
-                  <Trades key={`trade-${i}`} asset={a} index={i} />
+                  <Trade key={`trade-${i}`} asset={a} index={i} />
                 ))}
               </TableBody>
             </Table>
@@ -191,4 +191,4 @@ const TradingLog = () => {
   );
 };
 
-export default TradingLog;
+export default Trades;

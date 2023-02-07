@@ -28,7 +28,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 
-const Trades = ({ asset, index }) => {
+const Trade = ({ asset, index }) => {
   const [open, setOpen] = useState(false);
 
   const assetStatistics = useMemo(() => {
@@ -95,21 +95,34 @@ const Trades = ({ asset, index }) => {
             </IconButton>
           </Tooltip>
           <Tooltip title='Chart'>
-            <Link href={asset.links[0]}>
-              <IconButton size='small'>
-                <ShowChartIcon />
-              </IconButton>
+            <Link
+              color='inherit'
+              href={asset.links[0]}
+              target='_blank'
+              rel='noreferrer'
+              component={IconButton}>
+              <ShowChartIcon />
             </Link>
           </Tooltip>
           <Tooltip title='Verify Honeypot, Contract and LP Lock'>
-            <IconButton size='small'>
+            <Link
+              color='inherit'
+              href={asset.links[2]}
+              target='_blank'
+              rel='noreferrer'
+              component={IconButton}>
               <VerifiedUserIcon />
-            </IconButton>
+            </Link>
           </Tooltip>
           <Tooltip title='Etherscan'>
-            <IconButton size='small'>
+            <Link
+              color='inherit'
+              href={asset.links[1]}
+              target='_blank'
+              rel='noreferrer'
+              component={IconButton}>
               <DataArrayIcon />
-            </IconButton>
+            </Link>
           </Tooltip>
         </TableCell>
       </TableRow>
@@ -164,4 +177,4 @@ const Trades = ({ asset, index }) => {
   );
 };
 
-export default Trades;
+export default Trade;

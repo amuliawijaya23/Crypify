@@ -9,7 +9,7 @@ import { collection, query, where, addDoc, doc, getDocs, updateDoc } from 'fireb
 
 let cancelToken;
 
-const useTradingForm = () => {
+const useTradeForm = () => {
   const [pair, setPair] = useState('');
   const [date, setDate] = useState(new Date());
   const [amount, setAmount] = useState(0);
@@ -208,4 +208,4 @@ const useTradingForm = () => {
   };
 };
 
-export default useTradingForm;
+export default useTradeForm;

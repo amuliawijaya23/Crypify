@@ -28,9 +28,9 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { NumericFormat } from 'react-number-format';
 
 // import custom hook
-import useTradingForm from '../../hooks/useTradingForm';
+import useTradeForm from '../../hooks/useTradeForm';
 
-const TradingLogForm = ({ open, handleClose }) => {
+const TradeForm = ({ open, handleClose }) => {
   const {
     pair,
     date,
@@ -49,7 +49,7 @@ const TradingLogForm = ({ open, handleClose }) => {
     getTokenData,
     addTransaction,
     resetForm
-  } = useTradingForm();
+  } = useTradeForm();
 
   const pool = useSelector((state) => state.pool.value.profile);
 
@@ -224,9 +224,9 @@ const TradingLogForm = ({ open, handleClose }) => {
   );
 };
 
-TradingLogForm.propTypes = {
+TradeForm.propTypes = {
   open: PropTypes.bool,
   handleClose: PropTypes.func
 };
 
-export default TradingLogForm;
+export default TradeForm;
