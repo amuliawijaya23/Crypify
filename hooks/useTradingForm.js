@@ -89,6 +89,7 @@ const useTradingForm = () => {
   const addTransaction = async () => {
     try {
       if (pool?.address && price && amount && priceUSD && date) {
+        setLoading('Processing Transaction');
         const assetsRef = collection(db, 'assets');
         const assetQuery = await query(assetsRef, where('address', '==', pool.address));
         const queryResult = await getDocs(assetQuery);
@@ -134,6 +135,7 @@ const useTradingForm = () => {
           // eslint-disable-next-line camelcase
           is_buy: true
         });
+        setLoading(false);
       } else {
         if (pair) {
           setError('Please enter a valid pair address');

@@ -1,9 +1,9 @@
 import { useEffect, useCallback } from 'react';
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 // import reducers
 import { login, logout } from '../state/reducers/user';
-import { setAssets, clearAssets } from '../state/reducers/trades';
+import { setAssets, setAssetTransactions, clearAssets } from '../state/reducers/trades';
 
 // import Firebase
 import { db } from '../firebase-config';
@@ -22,27 +22,21 @@ const useAppData = () => {
           // eslint-disable-next-line camelcase
           date_added: doc.data().date_added.seconds
         }));
-
-        const result = [];
         const myAssets = assets.filter((asset) => asset.users.indexOf(user) !== -1);
-
-        for (const asset of myAssets) {
-          const transactionsRef = collection(db, `assets/${asset.id}/transactions`);
-          const transactionsQuery = await query(transactionsRef, where('user', '==', user));
-          const transactionsQueryResult = await getDocs(transactionsQuery);
-          const transactions = transactionsQueryResult.docs.map((t) => ({
-            id: t.id,
-            ...t.data(),
-            date: t.data().date.seconds
-          }));
-
-          result.push({
-            ...asset,
-            transactions: transactions
+        dispatch(setAssets(myAssets));
+        const assetIds = myAssets.map((asset) => asset.id);
+        for (const id of assetIds) {
+          const transactionsRef = collection(db, `assets/${id}/transactions`);
+          onSnapshot(transactionsRef, (snapshot) => {
+            const transactions = snapshot.docs.map((t) => ({
+              ...t.data(),
+              id: t.id,
+              date: t.data().date.seconds
+            }));
+            const myTransactions = transactions.filter((t) => t.user === user);
+            dispatch(setAssetTransactions({ id: id, transactions: myTransactions }));
           });
         }
-        // const myAssets = assets.filter((asset) => asset.users.includes(user));
-        dispatch(setAssets(result));
       });
     },
     [dispatch]

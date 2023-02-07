@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
 
 // import from MUI
 import {
@@ -13,7 +14,8 @@ import {
   IconButton,
   Tooltip,
   Checkbox,
-  Collapse
+  Collapse,
+  Link
 } from '@mui/material';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import DataArrayIcon from '@mui/icons-material/DataArray';
@@ -30,19 +32,19 @@ const Trades = ({ asset, index }) => {
   const [open, setOpen] = useState(false);
 
   const assetStatistics = useMemo(() => {
-    const buy = asset.transactions.filter((t) => t.is_buy);
-    const sell = asset.transactions.filter((t) => !t.is_buy);
-    const totalFee = asset.transactions.map((t) => t.fee).reduce((a, b) => a + b, 0);
+    const buy = asset.transactions?.filter((t) => t.is_buy);
+    const sell = asset.transactions?.filter((t) => !t.is_buy);
+    const totalFee = asset.transactions?.map((t) => t.fee).reduce((a, b) => a + b, 0);
 
-    const amountPurchased = buy.map((t) => t.amount).reduce((a, b) => a + b, 0);
-    const amountSold = sell.map((t) => t.amount).reduce((a, b) => a + b, 0);
+    const amountPurchased = buy?.map((t) => t.amount).reduce((a, b) => a + b, 0);
+    const amountSold = sell?.map((t) => t.amount).reduce((a, b) => a + b, 0);
 
-    const buyPriceUSD = buy.map((t) => t.total_price_usd).reduce((a, b) => a + b, 0);
-    const sellPriceUSD = sell.map((t) => t.total_price_usd).reduce((a, b) => a + b, 0);
+    const buyPriceUSD = buy?.map((t) => t.total_price_usd).reduce((a, b) => a + b, 0);
+    const sellPriceUSD = sell?.map((t) => t.total_price_usd).reduce((a, b) => a + b, 0);
 
     return {
-      amount: amountPurchased - amountSold,
-      profit: sellPriceUSD - (buyPriceUSD + totalFee)
+      amount: amountPurchased - amountSold || 0,
+      profit: sellPriceUSD - (buyPriceUSD + totalFee) || 0
     };
   }, [asset.transactions]);
 
@@ -58,18 +60,19 @@ const Trades = ({ asset, index }) => {
           </IconButton>
         </TableCell>
         <TableCell align='left' padding='normal'>
-          {formatDistanceToNow(fromUnixTime(asset.transactions[0].date), {
-            addSuffix: true
-          })}
+          {asset.transactions?.length > 0 &&
+            formatDistanceToNow(fromUnixTime(asset.transactions[0]?.date), {
+              addSuffix: true
+            })}
         </TableCell>
         <TableCell align='left' padding='normal'>
-          {formatDistanceToNow(
-            fromUnixTime(asset.transactions[asset.transactions.length - 1].date),
-            {
-              addSuffix: true
-            }
-          )}
-          ;
+          {asset.transactions?.length > 0 &&
+            formatDistanceToNow(
+              fromUnixTime(asset.transactions[asset.transactions.length - 1].date),
+              {
+                addSuffix: true
+              }
+            )}
         </TableCell>
         <TableCell align='left' padding='normal'>
           {asset.name}
@@ -92,9 +95,11 @@ const Trades = ({ asset, index }) => {
             </IconButton>
           </Tooltip>
           <Tooltip title='Chart'>
-            <IconButton size='small'>
-              <ShowChartIcon />
-            </IconButton>
+            <Link href={asset.links[0]}>
+              <IconButton size='small'>
+                <ShowChartIcon />
+              </IconButton>
+            </Link>
           </Tooltip>
           <Tooltip title='Verify Honeypot, Contract and LP Lock'>
             <IconButton size='small'>
@@ -139,7 +144,7 @@ const Trades = ({ asset, index }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {asset.transactions.map((t, i) => (
+                  {asset.transactions?.map((t, i) => (
                     <TableRow key={`transactions-row-${i}`}>
                       <TableCell>{formatDistanceToNow(fromUnixTime(t.date))}</TableCell>
                       <TableCell>{t.is_buy ? 'Buy' : 'Sell'}</TableCell>

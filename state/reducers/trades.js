@@ -13,11 +13,17 @@ export const tokenSlice = createSlice({
     setAssets: (state, action) => {
       state.value.assets = action.payload;
     },
+    setAssetTransactions: (state, action) => {
+      const assetId = action.payload.id;
+      const currentAssets = [...state.value.assets];
+      const index = currentAssets.map((a) => a.id).indexOf(assetId);
+      currentAssets[index].transactions = action.payload.transactions;
+    },
     clearAssets: (state, action) => {
       state.value = initialState;
     }
   }
 });
 
-export const { setAssets, clearAssets } = tokenSlice.actions;
+export const { setAssets, setAssetTransactions, clearAssets } = tokenSlice.actions;
 export default tokenSlice.reducer;
