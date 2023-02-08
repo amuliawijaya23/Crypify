@@ -17,7 +17,9 @@ export const tokenSlice = createSlice({
       const assetId = action.payload.id;
       const currentAssets = [...state.value.assets];
       const index = currentAssets.map((a) => a.id).indexOf(assetId);
-      currentAssets[index].transactions = action.payload.transactions;
+      state.value.assets[index].transactions = action.payload.transactions;
+      // eslint-disable-next-line camelcase
+      state.value.assets[index].last_transaction = action.payload.transactions[0].date;
     },
     clearAssets: (state, action) => {
       state.value = initialState;

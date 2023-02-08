@@ -66,7 +66,7 @@ const Trades = () => {
 
   // Table state
   const [order, setOrder] = useState('asc');
-  const [orderBy, setOrderBy] = useState('Last Transaction');
+  const [orderBy, setOrderBy] = useState('last_transaction');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [search, setSearch] = useState('');
@@ -108,9 +108,19 @@ const Trades = () => {
     getTokenData(address);
   };
 
-  const tableRows = stableSort(assets, getComparator(order, orderBy))
+  const trades = stableSort(assets, getComparator(order, orderBy))
     ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-    ?.map((row, index) => {});
+    ?.map((asset, index) => {
+      return (
+        <Trade
+          key={`trade-${index}`}
+          asset={asset}
+          index={index}
+          onBuy={() => handleBuyAsset(asset.address)}
+          onSell={() => handleSellAsset(asset.address)}
+        />
+      );
+    });
 
   return (
     <>
@@ -188,7 +198,7 @@ const Trades = () => {
               <TableHead>
                 <TableRow>
                   <TableCell />
-                  {['Last Transaction', 'Buy Date', 'Token', 'Amount', 'Profit/Loss'].map(
+                  {['last_transaction', 'date_added', 'token', 'amount', 'profit'].map(
                     (column, i) => (
                       <TableCell
                         key={column}
@@ -199,7 +209,14 @@ const Trades = () => {
                           active={orderBy === column}
                           direction={orderBy === column ? order : 'asc'}
                           onClick={() => handleRequestSort(column)}>
-                          <b>{column}</b>
+                          <b>
+                            {column.split('_')[0][0].toUpperCase()}
+                            {column.split('_')[0].substring(1)}
+                            {column.split('_')[1] &&
+                              ` ${column.split('_')[1][0].toUpperCase()}${column
+                                .split('_')[1]
+                                .substring(1)}`}
+                          </b>
                           {orderBy === column && (
                             <Box component='span' sx={visuallyHidden}>
                               {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
@@ -214,17 +231,7 @@ const Trades = () => {
                   </TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>
-                {assets?.map((a, i) => (
-                  <Trade
-                    key={`trade-${i}`}
-                    asset={a}
-                    index={i}
-                    onBuy={() => handleBuyAsset(a.address)}
-                    onSell={() => handleSellAsset(a.address)}
-                  />
-                ))}
-              </TableBody>
+              <TableBody>{trades}</TableBody>
             </Table>
           </TableContainer>
         </Grid>

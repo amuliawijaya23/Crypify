@@ -31,23 +31,6 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 const Trade = ({ asset, index, onBuy, onSell }) => {
   const [open, setOpen] = useState(false);
 
-  const assetStatistics = useMemo(() => {
-    const buy = asset.transactions?.filter((t) => t.is_buy);
-    const sell = asset.transactions?.filter((t) => !t.is_buy);
-    const totalFee = asset.transactions?.map((t) => t.fee).reduce((a, b) => a + b, 0);
-
-    const amountPurchased = buy?.map((t) => t.amount).reduce((a, b) => a + b, 0);
-    const amountSold = sell?.map((t) => t.amount).reduce((a, b) => a + b, 0);
-
-    const buyPriceUSD = buy?.map((t) => t.total_price_usd).reduce((a, b) => a + b, 0);
-    const sellPriceUSD = sell?.map((t) => t.total_price_usd).reduce((a, b) => a + b, 0);
-
-    return {
-      amount: amountPurchased - amountSold || 0,
-      profit: sellPriceUSD - (buyPriceUSD + totalFee) || 0
-    };
-  }, [asset.transactions]);
-
   return (
     <>
       <TableRow key={`row-${index}`}>
@@ -58,27 +41,24 @@ const Trade = ({ asset, index, onBuy, onSell }) => {
         </TableCell>
         <TableCell align='left' padding='normal'>
           {asset.transactions?.length > 0 &&
-            formatDistanceToNow(fromUnixTime(asset.transactions[0]?.date), {
+            formatDistanceToNow(fromUnixTime(asset.last_transaction), {
               addSuffix: true
             })}
         </TableCell>
         <TableCell align='left' padding='normal'>
           {asset.transactions?.length > 0 &&
-            formatDistanceToNow(
-              fromUnixTime(asset.transactions[asset.transactions.length - 1].date),
-              {
-                addSuffix: true
-              }
-            )}
+            formatDistanceToNow(fromUnixTime(asset.date_added), {
+              addSuffix: true
+            })}
         </TableCell>
         <TableCell align='left' padding='normal'>
           {asset.symbol}
         </TableCell>
         <TableCell align='left' padding='normal'>
-          {assetStatistics.amount}
+          {asset.amount}
         </TableCell>
         <TableCell align='left' padding='normal'>
-          {assetStatistics.profit}
+          {asset.profit}
         </TableCell>
         <TableCell align='right' padding='normal'>
           <Tooltip title='Buy'>

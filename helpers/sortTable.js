@@ -1,5 +1,5 @@
 export const descendingComparator = (a, b, orderBy) => {
-  if (orderBy === 'amount' || orderBy === 'valuation') {
+  if (orderBy === 'amount' || orderBy === 'profit') {
     if (parseInt(b[orderBy]) < parseInt(a[orderBy])) {
       return -1;
     }
