@@ -24,8 +24,8 @@ const useAppData = () => {
         }));
         const myAssets = assets.filter((asset) => asset.users.indexOf(user) !== -1);
         const result = [];
-        dispatch(setAssets(myAssets));
         const assetIds = myAssets.map((asset) => asset.id);
+
         for (const [i, id] of assetIds.entries()) {
           const transactionsRef = collection(db, `assets/${id}/transactions`);
           const transactionsQuery = await query(transactionsRef, where('user', '==', user));
@@ -58,7 +58,11 @@ const useAppData = () => {
             transactions: assetTransactions
           };
           result.push(asset);
+        }
+        dispatch(setAssets(result));
 
+        for (const id of assetIds) {
+          const transactionsRef = collection(db, `assets/${id}/transactions`);
           onSnapshot(transactionsRef, (snapshot) => {
             const transactions = snapshot.docs.map((t) => ({
               ...t.data(),
@@ -71,7 +75,6 @@ const useAppData = () => {
             dispatch(setAssetTransactions({ id: id, transactions: myTransactions }));
           });
         }
-        dispatch(setAssets(result));
       });
     },
     [dispatch]
