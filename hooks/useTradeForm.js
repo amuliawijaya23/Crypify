@@ -14,6 +14,7 @@ let cancelToken;
 const useTradeForm = () => {
   // text field states
   const [buy, setBuy] = useState(true);
+  const [find, setFind] = useState(false);
   const [pair, setPair] = useState('');
   const [date, setDate] = useState(new Date());
   const [amount, setAmount] = useState(0);
@@ -22,7 +23,6 @@ const useTradeForm = () => {
   const [priceUSD, setPriceUSD] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [find, setFind] = useState(false);
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.value);

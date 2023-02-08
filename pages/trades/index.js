@@ -35,6 +35,8 @@ import Trade from '../../components/Trade';
 // import custom hook
 import useTradeForm from '../../hooks/useTradeForm';
 
+import { getComparator, stableSort, descendingComparator } from '../../helpers/sortTable';
+
 const Trades = () => {
   const {
     buy,
@@ -105,6 +107,10 @@ const Trades = () => {
     setFind(true);
     getTokenData(address);
   };
+
+  const tableRows = stableSort(assets, getComparator(order, orderBy))
+    ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+    ?.map((row, index) => {});
 
   return (
     <>

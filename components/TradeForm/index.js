@@ -16,8 +16,7 @@ import {
   Box,
   CircularProgress,
   LinearProgress,
-  Snackbar,
-  Card
+  Snackbar
 } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';

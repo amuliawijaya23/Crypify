@@ -33,7 +33,9 @@ const useAppData = () => {
               id: t.id,
               date: t.data().date.seconds
             }));
-            const myTransactions = transactions.filter((t) => t.user === user);
+            const myTransactions = transactions
+              .filter((t) => t.user === user)
+              .sort((a, b) => b.date - a.date);
             dispatch(setAssetTransactions({ id: id, transactions: myTransactions }));
           });
         }

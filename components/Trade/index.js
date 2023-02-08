@@ -148,7 +148,7 @@ const Trade = ({ asset, index, onBuy, onSell }) => {
                     <TableCell>
                       <b>Fee</b>
                     </TableCell>
-                    <TableCell>
+                    <TableCell align='right'>
                       <b>Total Price in USD</b>
                     </TableCell>
                   </TableRow>
@@ -161,7 +161,7 @@ const Trade = ({ asset, index, onBuy, onSell }) => {
                       <TableCell>{t.amount}</TableCell>
                       <TableCell>{t.price}</TableCell>
                       <TableCell>{t.fee}</TableCell>
-                      <TableCell>{t.total_price_usd}</TableCell>
+                      <TableCell align='right'>{t.total_price_usd}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
