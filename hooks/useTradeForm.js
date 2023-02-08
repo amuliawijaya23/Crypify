@@ -1,15 +1,19 @@
 import axios from 'axios';
 import { useState } from 'react';
 
+// state management
 import { useSelector, useDispatch } from 'react-redux';
 import { setPoolProfile, resetPool } from '../state/reducers/pool';
 
+// firestore
 import { db } from '../firebase-config';
 import { collection, query, where, addDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
 
 let cancelToken;
 
 const useTradeForm = () => {
+  // text field states
+  const [buy, setBuy] = useState(true);
   const [pair, setPair] = useState('');
   const [date, setDate] = useState(new Date());
   const [amount, setAmount] = useState(0);
@@ -18,6 +22,7 @@ const useTradeForm = () => {
   const [priceUSD, setPriceUSD] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [find, setFind] = useState(false);
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user.value);
@@ -25,6 +30,8 @@ const useTradeForm = () => {
 
   const resetForm = () => {
     dispatch(resetPool());
+    setBuy(true);
+    setFind(false);
     setPair('');
     setDate(new Date());
     setAmount(0);
@@ -133,7 +140,7 @@ const useTradeForm = () => {
           // eslint-disable-next-line camelcase
           total_price_usd: priceUSD,
           // eslint-disable-next-line camelcase
-          is_buy: true
+          is_buy: buy
         });
         setLoading(false);
       } else {
@@ -188,6 +195,7 @@ const useTradeForm = () => {
   };
 
   return {
+    buy,
     pair,
     date,
     amount,
@@ -196,6 +204,9 @@ const useTradeForm = () => {
     priceUSD,
     loading,
     error,
+    find,
+    setBuy,
+    setFind,
     resetErrorAlert,
     handleDateChange,
     setAmount,

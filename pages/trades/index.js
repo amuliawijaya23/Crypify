@@ -28,14 +28,37 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 
+// import custom components
 import TradeForm from '../../components/TradeForm';
 import Trade from '../../components/Trade';
 
 // import custom hook
-import useTradingData from '../../hooks/useTradeData';
+import useTradeForm from '../../hooks/useTradeForm';
 
 const Trades = () => {
-  const { selected } = useTradingData();
+  const {
+    buy,
+    pair,
+    date,
+    amount,
+    price,
+    fee,
+    priceUSD,
+    loading,
+    error,
+    find,
+    setBuy,
+    setFind,
+    resetErrorAlert,
+    handleDateChange,
+    setAmount,
+    setPrice,
+    setFee,
+    setPriceUSD,
+    getTokenData,
+    addTransaction,
+    resetForm
+  } = useTradeForm();
 
   const assets = useSelector((state) => state.trades.value.assets);
 
@@ -47,8 +70,6 @@ const Trades = () => {
   const [search, setSearch] = useState('');
   const [searchBar, setSearchBar] = useState(false);
   const [open, setOpen] = useState(false);
-
-  const numSelected = selected.length;
 
   const rowCount = 0;
 
@@ -71,20 +92,52 @@ const Trades = () => {
     searchBar ? setSearchBar(false) : setSearchBar(true);
   };
 
+  const handleBuyAsset = (address) => {
+    setBuy(true);
+    setOpen(true);
+    setFind(true);
+    getTokenData(address);
+  };
+
+  const handleSellAsset = (address) => {
+    setBuy(false);
+    setOpen(true);
+    setFind(true);
+    getTokenData(address);
+  };
+
   return (
     <>
-      <TradeForm open={open} handleClose={() => setOpen(false)} />
+      <TradeForm
+        buy={buy}
+        open={open}
+        pair={pair}
+        date={date}
+        amount={amount}
+        price={price}
+        fee={fee}
+        priceUSD={priceUSD}
+        loading={loading}
+        error={error}
+        find={find}
+        resetErrorAlert={resetErrorAlert}
+        handleDateChange={handleDateChange}
+        setAmount={setAmount}
+        setPrice={setPrice}
+        setFee={setFee}
+        setPriceUSD={setPriceUSD}
+        getTokenData={getTokenData}
+        addTransaction={addTransaction}
+        resetForm={resetForm}
+        handleClose={() => setOpen(false)}
+      />
       <Grid container>
         <Grid item xs={12}>
           <Toolbar
             component={Paper}
             sx={{
               mt: 1,
-              alignItems: 'center',
-              ...(selected.length > 0 && {
-                bgcolor: (theme) =>
-                  alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity)
-              })
+              alignItems: 'center'
             }}>
             <Grid container padding={1}>
               <Grid item xs={6} padding={1}>
@@ -128,17 +181,6 @@ const Trades = () => {
             <Table stickyHeader aria-label='collapsible table' size='small'>
               <TableHead>
                 <TableRow>
-                  <TableCell padding='checkbox'>
-                    <Checkbox
-                      color='primary'
-                      indeterminate={numSelected > 0 && numSelected < rowCount}
-                      checked={rowCount > 0 && numSelected === rowCount}
-                      // onChange={onSelectAllClick}
-                      inputProps={{
-                        'aria-label': 'select all listings'
-                      }}
-                    />
-                  </TableCell>
                   <TableCell />
                   {['Last Transaction', 'Buy Date', 'Token', 'Amount', 'Profit/Loss'].map(
                     (column, i) => (
@@ -168,7 +210,13 @@ const Trades = () => {
               </TableHead>
               <TableBody>
                 {assets?.map((a, i) => (
-                  <Trade key={`trade-${i}`} asset={a} index={i} />
+                  <Trade
+                    key={`trade-${i}`}
+                    asset={a}
+                    index={i}
+                    onBuy={() => handleBuyAsset(a.address)}
+                    onSell={() => handleSellAsset(a.address)}
+                  />
                 ))}
               </TableBody>
             </Table>

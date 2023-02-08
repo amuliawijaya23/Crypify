@@ -18,7 +18,11 @@ import {
   Box,
   CircularProgress,
   LinearProgress,
-  Snackbar
+  Snackbar,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
 } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -27,30 +31,29 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 // import NumericFormat from react-number-format;
 import { NumericFormat } from 'react-number-format';
 
-// import custom hook
-import useTradeForm from '../../hooks/useTradeForm';
-
-const TradeForm = ({ open, handleClose }) => {
-  const {
-    pair,
-    date,
-    amount,
-    price,
-    fee,
-    priceUSD,
-    loading,
-    error,
-    resetErrorAlert,
-    handleDateChange,
-    setAmount,
-    setPrice,
-    setFee,
-    setPriceUSD,
-    getTokenData,
-    addTransaction,
-    resetForm
-  } = useTradeForm();
-
+const TradeForm = ({
+  open,
+  handleClose,
+  find,
+  buy,
+  pair,
+  date,
+  amount,
+  price,
+  fee,
+  priceUSD,
+  loading,
+  error,
+  resetErrorAlert,
+  handleDateChange,
+  setAmount,
+  setPrice,
+  setFee,
+  setPriceUSD,
+  getTokenData,
+  addTransaction,
+  resetForm
+}) => {
   const pool = useSelector((state) => state.pool.value.profile);
 
   const handleFormOnClose = () => {
@@ -70,10 +73,24 @@ const TradeForm = ({ open, handleClose }) => {
         </Alert>
       </Snackbar>
       <Dialog open={open} onClose={handleFormOnClose}>
-        <DialogTitle>Create Transaction</DialogTitle>
+        <DialogTitle>
+          {find
+            ? buy
+              ? `Buy ${pool?.token0?.name ? pool.token0.name : 'Token'}`
+              : `Sell ${pool?.token0?.name ? pool.token0.name : 'Token'}`
+            : 'Create New Transaction'}
+        </DialogTitle>
         <DialogContent sx={{ p: 1 }}>
           {loading === 'Processing Transaction' ? (
-            <CircularProgress />
+            <Box
+              sx={{
+                minWidth: 400,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}>
+              <CircularProgress />
+            </Box>
           ) : (
             <Grid container spacing={2} padding={1}>
               <Grid item xs={12}>
@@ -109,6 +126,7 @@ const TradeForm = ({ open, handleClose }) => {
                   helperText={
                     error && (!pair || !pool?.address) ? 'Enter a valid pair address' : ''
                   }
+                  disabled={find}
                 />
                 {pair && (
                   <>
@@ -225,6 +243,7 @@ const TradeForm = ({ open, handleClose }) => {
 };
 
 TradeForm.propTypes = {
+  transaction: PropTypes.bool,
   open: PropTypes.bool,
   handleClose: PropTypes.func
 };

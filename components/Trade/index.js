@@ -28,7 +28,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 
-const Trade = ({ asset, index }) => {
+const Trade = ({ asset, index, onBuy, onSell }) => {
   const [open, setOpen] = useState(false);
 
   const assetStatistics = useMemo(() => {
@@ -51,9 +51,6 @@ const Trade = ({ asset, index }) => {
   return (
     <>
       <TableRow key={`row-${index}`}>
-        <TableCell padding='checkbox'>
-          <Checkbox color='primary' inputProps={{ 'aria-label': 'select row' }} />
-        </TableCell>
         <TableCell>
           <IconButton aria-label='expand row' size='small' onClick={() => setOpen(!open)}>
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
@@ -85,12 +82,12 @@ const Trade = ({ asset, index }) => {
         </TableCell>
         <TableCell align='right' padding='normal'>
           <Tooltip title='Buy'>
-            <IconButton size='small'>
+            <IconButton size='small' onClick={onBuy}>
               <AddIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title='Sell'>
-            <IconButton size='small'>
+            <IconButton size='small' onClick={onSell}>
               <RemooveIcon />
             </IconButton>
           </Tooltip>
