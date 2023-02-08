@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 
@@ -7,11 +8,8 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  IconButton,
   Alert,
   Typography,
-  Card,
-  CardContent,
   DialogContentText,
   TextField,
   Grid,
@@ -19,10 +17,7 @@ import {
   CircularProgress,
   LinearProgress,
   Snackbar,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem
+  Card
 } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -30,6 +25,13 @@ import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 
 // import NumericFormat from react-number-format;
 import { NumericFormat } from 'react-number-format';
+
+// variables for visual modes
+const BUY = 'BUY';
+const SELL = 'SELL';
+const CONFIRM = 'CONFIRM';
+const ERROR = 'ERROR';
+const LOADING = 'LOADING';
 
 const TradeForm = ({
   open,
@@ -56,13 +58,33 @@ const TradeForm = ({
 }) => {
   const pool = useSelector((state) => state.pool.value.profile);
 
+  const [mode, setMode] = useState(buy ? BUY : SELL);
+
+  useEffect(() => {
+    if (!buy && mode === BUY) {
+      setMode(SELL);
+    }
+
+    if (buy && mode === SELL) {
+      setMode(BUY);
+    }
+  }, [mode, setMode, buy]);
+
   const handleFormOnClose = () => {
     handleClose();
     resetForm();
+    setMode(buy ? BUY : SELL);
   };
 
-  const handleFormSubmit = () => {
-    addTransaction();
+  const handleFormSubmit = async () => {
+    try {
+      setMode(LOADING);
+      await addTransaction();
+      setMode(CONFIRM);
+    } catch (error) {
+      setMode(ERROR);
+      console.error(error.response ? error.response.body : error);
+    }
   };
 
   return (
@@ -73,170 +95,212 @@ const TradeForm = ({
         </Alert>
       </Snackbar>
       <Dialog open={open} onClose={handleFormOnClose}>
-        <DialogTitle>
-          {find
-            ? buy
-              ? `Buy ${pool?.token0?.name ? pool.token0.name : 'Token'}`
-              : `Sell ${pool?.token0?.name ? pool.token0.name : 'Token'}`
-            : 'Create New Transaction'}
-        </DialogTitle>
-        <DialogContent sx={{ p: 1 }}>
-          {loading === 'Processing Transaction' ? (
-            <Box
-              sx={{
-                minWidth: 400,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}>
-              <CircularProgress />
-            </Box>
-          ) : (
-            <Grid container spacing={2} padding={1}>
-              <Grid item xs={12}>
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <DateTimePicker
-                    maxDate={new Date()}
-                    label='Date and Time'
-                    value={date}
-                    onChange={handleDateChange}
-                    error={error && !date ? true : false}
-                    helperText={error && !date ? 'Fill in the transaction date' : ''}
-                    renderInput={(params) => <TextField {...params} size='small' sx={{ my: 1 }} />}
+        {mode === LOADING && (
+          <Box
+            sx={{
+              minWidth: 400,
+              minHeight: 200,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: 1
+            }}>
+            <Typography component='div' variant='body1'>
+              Creating Transaction...
+            </Typography>
+            <CircularProgress size='3rem' sx={{ mt: 3 }} />
+          </Box>
+        )}
+        {(mode === BUY || mode === SELL) && (
+          <>
+            <DialogTitle>
+              {find
+                ? `${mode[0]}${mode.toLowerCase().substring(1)} ${pool?.token0?.symbol || 'Token'}`
+                : 'Create New Transaction'}
+            </DialogTitle>
+            <DialogContent sx={{ p: 2 }}>
+              <Grid container spacing={2} padding={1}>
+                <Grid item xs={12}>
+                  <LocalizationProvider dateAdapter={AdapterDateFns}>
+                    <DateTimePicker
+                      maxDate={new Date()}
+                      label='Date and Time'
+                      value={date}
+                      onChange={handleDateChange}
+                      error={error && !date ? true : false}
+                      helperText={error && !date ? 'Fill in the transaction date' : ''}
+                      renderInput={(params) => (
+                        <TextField {...params} size='small' sx={{ my: 1 }} />
+                      )}
+                    />
+                  </LocalizationProvider>
+                </Grid>
+                <Grid item xs={12}>
+                  <DialogContentText variant='body2' sx={{ p: 1 }}>
+                    Enter pair address to fetch Token information. If you are unable to find your
+                    token, it is currently not supported.
+                  </DialogContentText>
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    label='Pair Address'
+                    value={pair}
+                    onChange={(e) => getTokenData(e.target.value)}
+                    fullWidth
+                    size='small'
+                    margin='dense'
+                    variant='outlined'
+                    sx={{ my: 1 }}
+                    error={error && !pool?.address ? true : false}
+                    helperText={
+                      error && (!pair || !pool?.address) ? 'Enter a valid pair address' : ''
+                    }
+                    disabled={find}
                   />
-                </LocalizationProvider>
+                  {pair && (
+                    <>
+                      {loading && <LinearProgress sx={{ mb: 1 }} />}
+                      {!loading && pool?.address && (
+                        <Alert severity='info'>
+                          <b>
+                            {pool.pool}: {pool.token0.symbol}
+                          </b>
+                          <br />
+                          {pool.token0.name}
+                          <br />
+                          {pool.token0.symbol} / {pool.token1.symbol}
+                        </Alert>
+                      )}
+                      {!loading && !pool?.address && (
+                        <Alert severity='error' sx={{ width: '100%' }}>
+                          <b>Token not found</b>
+                        </Alert>
+                      )}
+                    </>
+                  )}
+                </Grid>
+                <Grid item xs={6}>
+                  <NumericFormat
+                    value={amount}
+                    decimalScale={5}
+                    thousandSeparator
+                    fullWidth
+                    label='Amount'
+                    size='small'
+                    margin='dense'
+                    variant='outlined'
+                    sx={{ my: 1 }}
+                    customInput={TextField}
+                    onValueChange={({ formattedValue, value, floatValue }) => {
+                      setAmount(floatValue);
+                    }}
+                    error={error && !amount ? true : false}
+                    helperText={error && !amount ? `Enter the amount of token` : ''}
+                  />
+                  <NumericFormat
+                    value={price}
+                    decimalScale={10}
+                    prefix={'$ '}
+                    thousandSeparator
+                    fullWidth
+                    label='Price'
+                    size='small'
+                    displayType='input'
+                    margin='dense'
+                    variant='outlined'
+                    sx={{ my: 1 }}
+                    customInput={TextField}
+                    onValueChange={({ formattedValue, value, floatValue }) => {
+                      setPrice(floatValue);
+                    }}
+                    error={error && !price ? true : false}
+                    helperText={error && !price ? `Enter the price of the token` : ''}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <NumericFormat
+                    value={priceUSD}
+                    decimalScale={10}
+                    prefix={'$ '}
+                    thousandSeparator
+                    fullWidth
+                    label='Price USD'
+                    size='small'
+                    margin='dense'
+                    variant='outlined'
+                    sx={{ my: 1 }}
+                    customInput={TextField}
+                    onValueChange={({ formattedValue, value, floatValue }) => {
+                      setPriceUSD(floatValue);
+                    }}
+                    error={error && !priceUSD ? true : false}
+                    helperText={error && !priceUSD ? `Enter transaction value in USD` : ''}
+                  />
+                  <NumericFormat
+                    label='Transaction Fee'
+                    decimalScale={10}
+                    prefix={'$ '}
+                    thousandSeparator
+                    value={fee}
+                    fullWidth
+                    size='small'
+                    margin='dense'
+                    variant='outlined'
+                    sx={{ my: 1 }}
+                    customInput={TextField}
+                    onValueChange={({ formattedValue, value, floatValue }) => {
+                      setFee(floatValue);
+                    }}
+                    error={error && !fee ? true : false}
+                    helperText={error && !fee ? `Enter the transaction fee` : ''}
+                  />
+                </Grid>
               </Grid>
-              <Grid item xs={12}>
-                <DialogContentText variant='body2' sx={{ p: 1 }}>
-                  Enter pair address to fetch Token information. If you are unable to find your
-                  token, it is currently not supported.
-                </DialogContentText>
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label='Pair Address'
-                  value={pair}
-                  onChange={(e) => getTokenData(e.target.value)}
-                  fullWidth
-                  size='small'
-                  margin='dense'
-                  variant='outlined'
-                  sx={{ my: 1 }}
-                  error={error && !pool?.address ? true : false}
-                  helperText={
-                    error && (!pair || !pool?.address) ? 'Enter a valid pair address' : ''
-                  }
-                  disabled={find}
-                />
-                {pair && (
-                  <>
-                    {loading && <LinearProgress sx={{ mb: 1 }} />}
-                    {!loading && pool?.address && (
-                      <Alert severity='success'>
-                        <b>
-                          {pool.pool}: {pool.token0.symbol}
-                        </b>
-                        <br />
-                        {pool.token0.name}
-                        <br />
-                        {pool.token0.symbol} / {pool.token1.symbol}
-                      </Alert>
-                    )}
-                    {!loading && !pool?.address && (
-                      <Alert severity='error' sx={{ width: '100%' }}>
-                        <b>Token not found</b>
-                      </Alert>
-                    )}
-                  </>
-                )}
-              </Grid>
-              <Grid item xs={6}>
-                <NumericFormat
-                  value={amount}
-                  decimalScale={5}
-                  thousandSeparator
-                  fullWidth
-                  label='Amount'
-                  size='small'
-                  margin='dense'
-                  variant='outlined'
-                  sx={{ my: 1 }}
-                  customInput={TextField}
-                  onValueChange={({ formattedValue, value, floatValue }) => {
-                    setAmount(floatValue);
-                  }}
-                  error={error && !amount ? true : false}
-                  helperText={error && !amount ? `Enter the amount of token` : ''}
-                />
-                <NumericFormat
-                  value={price}
-                  decimalScale={10}
-                  prefix={'$ '}
-                  thousandSeparator
-                  fullWidth
-                  label='Price'
-                  size='small'
-                  displayType='input'
-                  margin='dense'
-                  variant='outlined'
-                  sx={{ my: 1 }}
-                  customInput={TextField}
-                  onValueChange={({ formattedValue, value, floatValue }) => {
-                    setPrice(floatValue);
-                  }}
-                  error={error && !price ? true : false}
-                  helperText={error && !price ? `Enter the price of the token` : ''}
-                />
-              </Grid>
-              <Grid item xs={6}>
-                <NumericFormat
-                  value={priceUSD}
-                  decimalScale={10}
-                  prefix={'$ '}
-                  thousandSeparator
-                  fullWidth
-                  label='Price USD'
-                  size='small'
-                  margin='dense'
-                  variant='outlined'
-                  sx={{ my: 1 }}
-                  customInput={TextField}
-                  onValueChange={({ formattedValue, value, floatValue }) => {
-                    setPriceUSD(floatValue);
-                  }}
-                  error={error && !priceUSD ? true : false}
-                  helperText={error && !priceUSD ? `Enter transaction value in USD` : ''}
-                />
-                <NumericFormat
-                  label='Transaction Fee'
-                  decimalScale={10}
-                  prefix={'$ '}
-                  thousandSeparator
-                  value={fee}
-                  fullWidth
-                  size='small'
-                  margin='dense'
-                  variant='outlined'
-                  sx={{ my: 1 }}
-                  customInput={TextField}
-                  onValueChange={({ formattedValue, value, floatValue }) => {
-                    setFee(floatValue);
-                  }}
-                  error={error && !fee ? true : false}
-                  helperText={error && !fee ? `Enter the transaction fee` : ''}
-                />
-              </Grid>
-            </Grid>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button color='error' variant='outlined' onClick={handleFormOnClose}>
-            Cancel
-          </Button>
-          <Button color='success' variant='outlined' onClick={handleFormSubmit}>
-            Confirm
-          </Button>
-        </DialogActions>
+            </DialogContent>
+            <DialogActions>
+              <Button variant='outlined' onClick={handleFormOnClose}>
+                Cancel
+              </Button>
+              <Button variant='outlined' onClick={handleFormSubmit}>
+                Create
+              </Button>
+            </DialogActions>
+          </>
+        )}
+        {mode === CONFIRM && (
+          <>
+            <DialogContent sx={{ p: 2, minWidth: 450 }}>
+              <Typography variant='h6' component='div' sx={{ mb: 1 }}>
+                Transaction Created
+              </Typography>
+              <Alert severity='success'>
+                <Typography variant='body2' component='div'>
+                  <b>
+                    {pool.pool}: {pool.token0.symbol}
+                  </b>
+                </Typography>
+                <Typography variant='caption' component='div'>
+                  {pool.token0.symbol} / {pool.token1.symbol}
+                </Typography>
+                <Typography variant='caption' component='div'>
+                  Amount: {amount}
+                  <br />
+                  Price: {price}
+                  <br />
+                  Total Price in USD: {priceUSD}
+                  <br />
+                  Fee: {fee}
+                </Typography>
+              </Alert>
+            </DialogContent>
+            <DialogActions sx={{ p: 1 }}>
+              <Button variant='outlined' onClick={handleFormOnClose}>
+                Close
+              </Button>
+            </DialogActions>
+          </>
+        )}
       </Dialog>
     </>
   );

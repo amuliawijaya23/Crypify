@@ -72,7 +72,7 @@ const Trade = ({ asset, index, onBuy, onSell }) => {
             )}
         </TableCell>
         <TableCell align='left' padding='normal'>
-          {asset.name}
+          {asset.symbol}
         </TableCell>
         <TableCell align='left' padding='normal'>
           {assetStatistics.amount}

@@ -96,7 +96,6 @@ const useTradeForm = () => {
   const addTransaction = async () => {
     try {
       if (pool?.address && price && amount && priceUSD && date) {
-        setLoading('Processing Transaction');
         const assetsRef = collection(db, 'assets');
         const assetQuery = await query(assetsRef, where('address', '==', pool.address));
         const queryResult = await getDocs(assetQuery);
@@ -110,6 +109,7 @@ const useTradeForm = () => {
             // eslint-disable-next-line camelcase
             token_address: pool.token0.id,
             name: pool.token0.name,
+            symbol: pool.token0.symbol,
             pool: pool.pool,
             users: [user.data.uid],
             links: [
@@ -142,9 +142,8 @@ const useTradeForm = () => {
           // eslint-disable-next-line camelcase
           is_buy: buy
         });
-        setLoading(false);
       } else {
-        if (pair) {
+        if (!pair) {
           setError('Please enter a valid pair address');
         } else {
           let errorPrompt = 'Fill in the ';
