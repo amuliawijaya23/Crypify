@@ -4,10 +4,20 @@ import { useState } from 'react';
 // state management
 import { useSelector, useDispatch } from 'react-redux';
 import { setPoolProfile, resetPool } from '../state/reducers/pool';
+import { setAssetTransactions } from '../state/reducers/trades';
 
 // firestore
 import { db } from '../firebase-config';
-import { collection, query, where, addDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
+import {
+  collection,
+  query,
+  where,
+  addDoc,
+  doc,
+  getDocs,
+  updateDoc,
+  onSnapshot
+} from 'firebase/firestore';
 
 let cancelToken;
 

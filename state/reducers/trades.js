@@ -2,11 +2,12 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
   value: {
-    assets: []
+    assets: [],
+    transactions: []
   }
 };
 
-export const tokenSlice = createSlice({
+export const tradeSlice = createSlice({
   name: 'trades',
   initialState: initialState,
   reducers: {
@@ -15,12 +16,45 @@ export const tokenSlice = createSlice({
     },
     setAssetTransactions: (state, action) => {
       const assetId = action.payload.id;
-      const currentAssets = [...state.value.assets];
-      const index = currentAssets.map((a) => a.id).indexOf(assetId);
-      state.value.assets[index].transactions = action.payload.transactions;
-      if (action.payload.transactions.length > 0) {
-        // eslint-disable-next-line camelcase
-        state.value.assets[index].last_transaction = action.payload.transactions[0].date;
+      const transactions = action.payload.transactions;
+      const transactionsCount = transactions.length;
+
+      if (transactionsCount > 0) {
+        const buy = transactions?.filter((t) => t.is_buy);
+        const sell = transactions?.filter((t) => !t.is_buy);
+
+        const amountPurchased = buy?.map((t) => t.amount).reduce((a, b) => a + b, 0);
+        const amountSold = sell?.map((t) => t.amount).reduce((a, b) => a + b, 0);
+
+        const totalFee = transactions?.map((t) => t.fee).reduce((a, b) => a + b, 0);
+        const buyPriceUSD = buy?.map((t) => t.total_price_usd).reduce((a, b) => a + b, 0);
+        const sellPriceUSD = sell?.map((t) => t.total_price_usd).reduce((a, b) => a + b, 0);
+
+        const newTransaction = {
+          // eslint-disable-next-line camelcase
+          asset_id: assetId,
+          amount: amountPurchased - amountSold,
+          profit: sellPriceUSD - (buyPriceUSD + totalFee),
+          // eslint-disable-next-line camelcase
+          last_transaction: transactions[0].date,
+          // eslint-disable-next-line camelcase
+          buy_date: transactions[transactionsCount - 1].date,
+          data: transactions
+        };
+
+        if (state.value.transactions) {
+          const currentTransactions = [...state.value.transactions];
+          const index = currentTransactions.map((t) => t.asset_id).indexOf(assetId);
+
+          if (index === -1) {
+            state.value.transactions = [...currentTransactions, newTransaction];
+          } else {
+            currentTransactions[index] = newTransaction;
+            state.value.transactions = currentTransactions;
+          }
+        } else {
+          state.value.transactions = [newTransaction];
+        }
       }
     },
     clearAssets: (state, action) => {
@@ -29,5 +63,5 @@ export const tokenSlice = createSlice({
   }
 });
 
-export const { setAssets, setAssetTransactions, clearAssets } = tokenSlice.actions;
-export default tokenSlice.reducer;
+export const { setAssets, setAssetTransactions, clearAssets } = tradeSlice.actions;
+export default tradeSlice.reducer;

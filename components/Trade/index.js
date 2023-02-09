@@ -31,6 +31,10 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 const Trade = ({ asset, index, onBuy, onSell }) => {
   const [open, setOpen] = useState(false);
 
+  const transactions = useSelector((state) => state.trades.value.transactions)?.find(
+    (t) => t.asset_id === asset.id
+  );
+
   return (
     <>
       <TableRow key={`row-${index}`}>
@@ -40,14 +44,14 @@ const Trade = ({ asset, index, onBuy, onSell }) => {
           </IconButton>
         </TableCell>
         <TableCell align='left' padding='normal'>
-          {asset.transactions?.length > 0 &&
-            formatDistanceToNow(fromUnixTime(asset.last_transaction), {
+          {transactions?.last_transaction &&
+            formatDistanceToNow(fromUnixTime(transactions.last_transaction), {
               addSuffix: true
             })}
         </TableCell>
         <TableCell align='left' padding='normal'>
-          {asset.transactions?.length > 0 &&
-            formatDistanceToNow(fromUnixTime(asset.date_added), {
+          {transactions?.buy_date &&
+            formatDistanceToNow(fromUnixTime(transactions.buy_date), {
               addSuffix: true
             })}
         </TableCell>
@@ -55,10 +59,10 @@ const Trade = ({ asset, index, onBuy, onSell }) => {
           {asset.symbol}
         </TableCell>
         <TableCell align='left' padding='normal'>
-          {asset.amount}
+          {transactions?.amount}
         </TableCell>
         <TableCell align='left' padding='normal'>
-          {asset.profit}
+          {transactions?.profit}
         </TableCell>
         <TableCell align='right' padding='normal'>
           <Tooltip title='Buy'>
@@ -134,7 +138,7 @@ const Trade = ({ asset, index, onBuy, onSell }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {asset.transactions?.map((t, i) => (
+                  {transactions?.data?.map((t, i) => (
                     <TableRow key={`transactions-row-${i}`}>
                       <TableCell>{formatDistanceToNow(fromUnixTime(t.date))}</TableCell>
                       <TableCell>{t.is_buy ? 'Buy' : 'Sell'}</TableCell>

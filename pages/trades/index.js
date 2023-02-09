@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 // import from MUI
-import { alpha } from '@mui/material/styles';
 import { visuallyHidden } from '@mui/utils';
 import {
   Box,
@@ -16,12 +15,9 @@ import {
   Paper,
   Toolbar,
   TextField,
-  Alert,
-  Snackbar,
   Grid,
   IconButton,
   Tooltip,
-  Checkbox,
   TableSortLabel,
   ClickAwayListener
 } from '@mui/material';
@@ -35,7 +31,7 @@ import Trade from '../../components/Trade';
 // import custom hook
 import useTradeForm from '../../hooks/useTradeForm';
 
-import { getComparator, stableSort, descendingComparator } from '../../helpers/sortTable';
+import { getComparator, stableSort } from '../../helpers/sortTable';
 
 const Trades = () => {
   const {
@@ -65,7 +61,7 @@ const Trades = () => {
   const assets = useSelector((state) => state.trades.value.assets);
 
   // Table state
-  const [order, setOrder] = useState('asc');
+  const [order, setOrder] = useState('desc');
   const [orderBy, setOrderBy] = useState('last_transaction');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -198,7 +194,7 @@ const Trades = () => {
               <TableHead>
                 <TableRow>
                   <TableCell />
-                  {['last_transaction', 'date_added', 'token', 'amount', 'profit'].map(
+                  {['last_transaction', 'buy_date', 'token', 'amount', 'profit'].map(
                     (column, i) => (
                       <TableCell
                         key={column}

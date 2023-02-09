@@ -243,7 +243,7 @@ export const Navigation = () => {
                   console.log('test2');
                   break;
                 case 2:
-                  router.push('/trading-log');
+                  router.push('/trades');
                   break;
                 default:
                   break;
