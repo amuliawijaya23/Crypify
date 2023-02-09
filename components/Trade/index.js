@@ -1,6 +1,4 @@
-import { useState, useMemo } from 'react';
-import { useSelector } from 'react-redux';
-import { useRouter } from 'next/router';
+import { useState } from 'react';
 
 // import from MUI
 import {
@@ -14,7 +12,13 @@ import {
   IconButton,
   Tooltip,
   Collapse,
-  Link
+  Link,
+  Popover,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  ListItemIcon
 } from '@mui/material';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import DataArrayIcon from '@mui/icons-material/DataArray';
@@ -24,12 +28,24 @@ import RemooveIcon from '@mui/icons-material/Remove';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import DeleteIcon from '@mui/icons-material/Delete';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 import fromUnixTime from 'date-fns/fromUnixTime';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 
 const Trade = ({ asset, index, onBuy, onSell, remove }) => {
   const [open, setOpen] = useState(false);
+  const [menu, setMenu] = useState(null);
+
+  const handleOnClickBuy = () => {
+    onBuy();
+    setMenu(null);
+  };
+
+  const handleOnClickSell = () => {
+    onSell();
+    setMenu(null);
+  };
 
   return (
     <>
@@ -60,52 +76,64 @@ const Trade = ({ asset, index, onBuy, onSell, remove }) => {
         <TableCell align='left' padding='normal'>
           {asset?.profit}
         </TableCell>
-        <TableCell align='right' padding='normal'>
-          <Tooltip title='Buy'>
-            <IconButton color='inherit' size='small' onClick={onBuy}>
-              <AddIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title='Sell'>
-            <IconButton color='inherit' size='small' onClick={onSell}>
-              <RemooveIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title='Chart'>
-            <Link
-              color='inherit'
-              href={asset.links[0]}
-              target='_blank'
-              rel='noreferrer'
-              component={IconButton}>
-              <ShowChartIcon />
-            </Link>
-          </Tooltip>
-          <Tooltip title='Verify Honeypot, Contract and LP Lock'>
-            <Link
-              color='inherit'
-              href={asset.links[2]}
-              target='_blank'
-              rel='noreferrer'
-              component={IconButton}>
-              <VerifiedUserIcon />
-            </Link>
-          </Tooltip>
-          <Tooltip title='Etherscan'>
-            <Link
-              color='inherit'
-              href={asset.links[1]}
-              target='_blank'
-              rel='noreferrer'
-              component={IconButton}>
-              <DataArrayIcon />
-            </Link>
-          </Tooltip>
-          <Tooltip title='Delete'>
-            <IconButton size='small' color='inherit' onClick={remove}>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
+        <TableCell align='right' padding='normal' sx={{ display: { sx: 'none', lg: 'flex' } }}>
+          <IconButton>
+            <MoreVertIcon onClick={(e) => setMenu(e.currentTarget)} />
+          </IconButton>
+          <Popover
+            open={Boolean(menu)}
+            anchorEl={menu}
+            onClose={() => setMenu(null)}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
+            <List>
+              <ListItem disablePadding>
+                <ListItemButton onClick={handleOnClickBuy}>
+                  <ListItemText primary='Buy' primaryTypographyProps={{ variant: 'body2' }} />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton onClick={handleOnClickSell}>
+                  <ListItemText primary='Sell' primaryTypographyProps={{ variant: 'body2' }} />
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <Link
+                  color='inherit'
+                  href={asset.links[0]}
+                  target='_blank'
+                  rel='noreferrer'
+                  sx={{ textDecoration: 'none' }}
+                  component={ListItemButton}>
+                  <ListItemText primary='Chart' primaryTypographyProps={{ variant: 'body2' }} />
+                </Link>
+              </ListItem>
+              <ListItem disablePadding>
+                <Link
+                  color='inherit'
+                  href={asset.links[1]}
+                  target='_blank'
+                  rel='noreferrer'
+                  sx={{ textDecoration: 'none' }}
+                  component={ListItemButton}>
+                  <ListItemText
+                    primary='Verify Token'
+                    primaryTypographyProps={{ variant: 'body2' }}
+                  />
+                </Link>
+              </ListItem>
+              <ListItem disablePadding>
+                <Link
+                  color='inherit'
+                  href={asset.links[2]}
+                  target='_blank'
+                  rel='noreferrer'
+                  sx={{ textDecoration: 'none' }}
+                  component={ListItemButton}>
+                  <ListItemText primary='Etherscan' primaryTypographyProps={{ variant: 'body2' }} />
+                </Link>
+              </ListItem>
+            </List>
+          </Popover>
         </TableCell>
       </TableRow>
       <TableRow>

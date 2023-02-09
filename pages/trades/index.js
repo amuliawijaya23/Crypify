@@ -235,7 +235,7 @@ const Trades = () => {
                     )
                   )}
                   <TableCell align='right' padding='normal'>
-                    <b>Links</b>
+                    <b>Actions</b>
                   </TableCell>
                 </TableRow>
               </TableHead>
