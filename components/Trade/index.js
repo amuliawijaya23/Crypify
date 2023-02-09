@@ -13,7 +13,6 @@ import {
   TableRow,
   IconButton,
   Tooltip,
-  Checkbox,
   Collapse,
   Link
 } from '@mui/material';
@@ -31,10 +30,6 @@ import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 const Trade = ({ asset, index, onBuy, onSell }) => {
   const [open, setOpen] = useState(false);
 
-  const transactions = useSelector((state) => state.trades.value.transactions)?.find(
-    (t) => t.asset_id === asset.id
-  );
-
   return (
     <>
       <TableRow key={`row-${index}`}>
@@ -44,14 +39,14 @@ const Trade = ({ asset, index, onBuy, onSell }) => {
           </IconButton>
         </TableCell>
         <TableCell align='left' padding='normal'>
-          {transactions?.last_transaction &&
-            formatDistanceToNow(fromUnixTime(transactions.last_transaction), {
+          {asset?.last_transaction &&
+            formatDistanceToNow(fromUnixTime(asset.last_transaction), {
               addSuffix: true
             })}
         </TableCell>
         <TableCell align='left' padding='normal'>
-          {transactions?.buy_date &&
-            formatDistanceToNow(fromUnixTime(transactions.buy_date), {
+          {asset?.buy_date &&
+            formatDistanceToNow(fromUnixTime(asset.buy_date), {
               addSuffix: true
             })}
         </TableCell>
@@ -59,10 +54,10 @@ const Trade = ({ asset, index, onBuy, onSell }) => {
           {asset.symbol}
         </TableCell>
         <TableCell align='left' padding='normal'>
-          {transactions?.amount}
+          {asset?.amount}
         </TableCell>
         <TableCell align='left' padding='normal'>
-          {transactions?.profit}
+          {asset?.profit}
         </TableCell>
         <TableCell align='right' padding='normal'>
           <Tooltip title='Buy'>
@@ -138,7 +133,7 @@ const Trade = ({ asset, index, onBuy, onSell }) => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {transactions?.data?.map((t, i) => (
+                  {asset?.data?.map((t, i) => (
                     <TableRow key={`transactions-row-${i}`}>
                       <TableCell>{formatDistanceToNow(fromUnixTime(t.date))}</TableCell>
                       <TableCell>{t.is_buy ? 'Buy' : 'Sell'}</TableCell>

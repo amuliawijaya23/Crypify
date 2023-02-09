@@ -58,7 +58,7 @@ const Trades = () => {
     resetForm
   } = useTradeForm();
 
-  const assets = useSelector((state) => state.trades.value.assets);
+  const trades = useSelector((state) => state.trades.value);
 
   // Table state
   const [order, setOrder] = useState('desc');
@@ -104,7 +104,17 @@ const Trades = () => {
     getTokenData(address);
   };
 
-  const trades = stableSort(assets, getComparator(order, orderBy))
+  const tradeData = trades?.assets?.map((a) => {
+    const transactions = [...trades.transactions];
+    const assetTransactions = transactions.find((t) => t.asset_id === a.id);
+
+    return {
+      ...a,
+      ...assetTransactions
+    };
+  });
+
+  const tradeRows = stableSort(tradeData, getComparator(order, orderBy))
     ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
     ?.map((asset, index) => {
       return (
@@ -227,7 +237,7 @@ const Trades = () => {
                   </TableCell>
                 </TableRow>
               </TableHead>
-              <TableBody>{trades}</TableBody>
+              <TableBody>{tradeRows}</TableBody>
             </Table>
           </TableContainer>
         </Grid>
