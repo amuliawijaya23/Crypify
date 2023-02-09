@@ -14,12 +14,15 @@ import {
   where,
   addDoc,
   doc,
+  getDoc,
   getDocs,
   updateDoc,
   onSnapshot
 } from 'firebase/firestore';
 
 let cancelToken;
+
+const assetsRef = collection(db, 'assets');
 
 const useTradeForm = () => {
   // text field states
@@ -106,7 +109,6 @@ const useTradeForm = () => {
   const addTransaction = async () => {
     try {
       if (pool?.address && price && amount && priceUSD && date) {
-        const assetsRef = collection(db, 'assets');
         const assetQuery = await query(assetsRef, where('address', '==', pool.address));
         const queryResult = await getDocs(assetQuery);
         const asset = queryResult.docs;
@@ -203,6 +205,16 @@ const useTradeForm = () => {
     }
   };
 
+  const removeAsset = async (id) => {
+    const docRef = doc(db, 'assets', id);
+    const asset = await getDoc(docRef);
+    const currentUsers = [...asset.data().users];
+    const newUsers = currentUsers.filter((u) => u !== user.data.uid);
+    await updateDoc(docRef, {
+      users: newUsers
+    });
+  };
+
   return {
     buy,
     pair,
@@ -224,6 +236,7 @@ const useTradeForm = () => {
     setPriceUSD,
     getTokenData,
     addTransaction,
+    removeAsset,
     resetForm
   };
 };

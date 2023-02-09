@@ -23,11 +23,12 @@ import AddIcon from '@mui/icons-material/Add';
 import RemooveIcon from '@mui/icons-material/Remove';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import fromUnixTime from 'date-fns/fromUnixTime';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 
-const Trade = ({ asset, index, onBuy, onSell }) => {
+const Trade = ({ asset, index, onBuy, onSell, remove }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -61,12 +62,12 @@ const Trade = ({ asset, index, onBuy, onSell }) => {
         </TableCell>
         <TableCell align='right' padding='normal'>
           <Tooltip title='Buy'>
-            <IconButton size='small' onClick={onBuy}>
+            <IconButton color='inherit' size='small' onClick={onBuy}>
               <AddIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title='Sell'>
-            <IconButton size='small' onClick={onSell}>
+            <IconButton color='inherit' size='small' onClick={onSell}>
               <RemooveIcon />
             </IconButton>
           </Tooltip>
@@ -99,6 +100,11 @@ const Trade = ({ asset, index, onBuy, onSell }) => {
               component={IconButton}>
               <DataArrayIcon />
             </Link>
+          </Tooltip>
+          <Tooltip title='Delete'>
+            <IconButton size='small' color='inherit' onClick={remove}>
+              <DeleteIcon />
+            </IconButton>
           </Tooltip>
         </TableCell>
       </TableRow>
@@ -135,7 +141,9 @@ const Trade = ({ asset, index, onBuy, onSell }) => {
                 <TableBody>
                   {asset?.data?.map((t, i) => (
                     <TableRow key={`transactions-row-${i}`}>
-                      <TableCell>{formatDistanceToNow(fromUnixTime(t.date))}</TableCell>
+                      <TableCell>
+                        {formatDistanceToNow(fromUnixTime(t.date), { addSuffix: true })}
+                      </TableCell>
                       <TableCell>{t.is_buy ? 'Buy' : 'Sell'}</TableCell>
                       <TableCell>{t.amount}</TableCell>
                       <TableCell>{t.price}</TableCell>
