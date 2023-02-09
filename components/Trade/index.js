@@ -33,7 +33,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 
-const Trade = ({ asset, index, onBuy, onSell, remove }) => {
+const Trade = ({ asset, index, onBuy, onSell, onRemove }) => {
   const [open, setOpen] = useState(false);
   const [menu, setMenu] = useState(null);
 
@@ -44,6 +44,11 @@ const Trade = ({ asset, index, onBuy, onSell, remove }) => {
 
   const handleOnClickSell = () => {
     onSell();
+    setMenu(null);
+  };
+
+  const handleOnClickRemove = () => {
+    onRemove();
     setMenu(null);
   };
 
@@ -87,11 +92,6 @@ const Trade = ({ asset, index, onBuy, onSell, remove }) => {
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
             <List>
               <ListItem disablePadding>
-                <ListItemButton onClick={handleOnClickBuy}>
-                  <ListItemText primary='Buy' primaryTypographyProps={{ variant: 'body2' }} />
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
                 <ListItemButton onClick={handleOnClickSell}>
                   <ListItemText primary='Sell' primaryTypographyProps={{ variant: 'body2' }} />
                 </ListItemButton>
@@ -115,10 +115,7 @@ const Trade = ({ asset, index, onBuy, onSell, remove }) => {
                   rel='noreferrer'
                   sx={{ textDecoration: 'none' }}
                   component={ListItemButton}>
-                  <ListItemText
-                    primary='Verify Token'
-                    primaryTypographyProps={{ variant: 'body2' }}
-                  />
+                  <ListItemText primary='Etherscan' primaryTypographyProps={{ variant: 'body2' }} />
                 </Link>
               </ListItem>
               <ListItem disablePadding>
@@ -129,8 +126,16 @@ const Trade = ({ asset, index, onBuy, onSell, remove }) => {
                   rel='noreferrer'
                   sx={{ textDecoration: 'none' }}
                   component={ListItemButton}>
-                  <ListItemText primary='Etherscan' primaryTypographyProps={{ variant: 'body2' }} />
+                  <ListItemText
+                    primary='Verify Token'
+                    primaryTypographyProps={{ variant: 'body2' }}
+                  />
                 </Link>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton onClick={handleOnClickBuy}>
+                  <ListItemText primary='Remove' primaryTypographyProps={{ variant: 'body2' }} />
+                </ListItemButton>
               </ListItem>
             </List>
           </Popover>

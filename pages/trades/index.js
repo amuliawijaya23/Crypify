@@ -125,7 +125,7 @@ const Trades = () => {
           index={index}
           onBuy={() => handleBuyAsset(asset.address)}
           onSell={() => handleSellAsset(asset.address)}
-          remove={() => removeAsset(asset.id)}
+          onRemove={() => removeAsset(asset.id)}
         />
       );
     });
