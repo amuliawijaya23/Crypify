@@ -27,8 +27,8 @@ export const tradeSlice = createSlice({
         const amountSold = sell?.map((t) => t.amount).reduce((a, b) => a + b, 0);
 
         const totalFee = transactions?.map((t) => t.fee).reduce((a, b) => a + b, 0);
-        const buyPriceUSD = buy?.map((t) => t.total_price_usd).reduce((a, b) => a + b, 0);
-        const sellPriceUSD = sell?.map((t) => t.total_price_usd).reduce((a, b) => a + b, 0);
+        const buyPriceUSD = buy?.map((t) => t.price_usd).reduce((a, b) => a + b, 0);
+        const sellPriceUSD = sell?.map((t) => t.price_usd).reduce((a, b) => a + b, 0);
 
         const newTransaction = {
           // eslint-disable-next-line camelcase

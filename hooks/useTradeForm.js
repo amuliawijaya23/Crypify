@@ -4,7 +4,6 @@ import { useState } from 'react';
 // state management
 import { useSelector, useDispatch } from 'react-redux';
 import { setPoolProfile, resetPool } from '../state/reducers/pool';
-import { setAssetTransactions } from '../state/reducers/trades';
 
 // firestore
 import { db } from '../firebase-config';
@@ -16,24 +15,30 @@ import {
   doc,
   getDoc,
   getDocs,
-  updateDoc,
-  onSnapshot
+  updateDoc
 } from 'firebase/firestore';
+
+// Common Base Addresses
+const USDC = '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48';
+const USDT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
+const WETH = '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+const DAI = '0x6b175474e89094c44da98b954eedeac495271d0f';
 
 let cancelToken;
 
-const assetsRef = collection(db, 'assets');
+const tradesRef = collection(db, 'trades');
 
 const useTradeForm = () => {
   // text field states
   const [buy, setBuy] = useState(true);
-  const [find, setFind] = useState(false);
-  const [pair, setPair] = useState('');
+  const [disableSearch, setDisableSearch] = useState(false);
   const [date, setDate] = useState(new Date());
+  const [pair, setPair] = useState('');
+  const [swapPair, setSwapPair] = useState('');
   const [amount, setAmount] = useState(0);
-  const [price, setPrice] = useState(0);
+  const [swapAmount, setSwapAmount] = useState(0);
+  const [swapPrice, setSwapPrice] = useState(0);
   const [fee, setFee] = useState(0);
-  const [priceUSD, setPriceUSD] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -44,13 +49,14 @@ const useTradeForm = () => {
   const resetForm = () => {
     dispatch(resetPool());
     setBuy(true);
-    setFind(false);
+    setDisableSearch(false);
     setPair('');
+    setSwapPair('');
     setDate(new Date());
     setAmount(0);
-    setPrice(0);
+    setSwapPrice(0);
     setFee(0);
-    setPriceUSD(0);
+    setSwapAmount(0);
     setLoading(false);
     setError('');
   };
@@ -78,24 +84,11 @@ const useTradeForm = () => {
       });
 
       if (data.pool) {
-        const price = await axios.post('/api/token/price', {
-          pairAddress: address,
-          tokenAddress: data.token0.id,
-          tokenDecimals: data.token0.decimals,
-          baseAddress: data.token1.id,
-          baseDecimals: data.token1.decimals,
-          cancelToken: cancelToken.token
-        });
         const poolData = {
           ...data,
-          address: address,
-          token0: {
-            ...data.token0,
-            price: price.data.price
-          }
+          address: address
         };
         dispatch(setPoolProfile(poolData));
-        setPrice(price.data.price);
       } else {
         dispatch(resetPool());
       }
@@ -106,24 +99,67 @@ const useTradeForm = () => {
     }
   };
 
+  const getSwapData = async (address) => {
+    try {
+      setLoading(true);
+      setSwapPair(address);
+      if (typeof cancelToken !== typeof undefined) {
+        cancelToken.cancel('Cancelingn previous search request');
+      }
+
+      if (address === USDC || address === USDT) {
+        setSwapPrice(1);
+      } else {
+        const { data } = await axios.post('api/token/price', {
+          address: address
+        });
+        setSwapPrice(data.price);
+      }
+    } catch (error) {
+      console.error(error.response ? error.response.body : error);
+    }
+  };
+
   const addTransaction = async () => {
     try {
-      if (pool?.address && price && amount && priceUSD && date) {
-        const assetQuery = await query(assetsRef, where('address', '==', pool.address));
-        const queryResult = await getDocs(assetQuery);
-        const asset = queryResult.docs;
+      if (pool?.address && amount && fee && swapAmount && swapPrice && date) {
+        const tradesQuery = await query(
+          tradesRef,
+          where('pool', '==', pool.address),
+          where('swap_token_address', '==', swapPair),
+          where('user', '==', user.data.uid)
+        );
+        const queryResult = await getDocs(tradesQuery);
+        const trades = queryResult.docs;
 
         let assetDocId;
 
-        if (asset.length < 1) {
-          const newDoc = await addDoc(assetsRef, {
-            address: pool.address,
+        if (trades.length < 1) {
+          const swapToken = (() => {
+            switch (swapPair) {
+              case DAI:
+                return 'DAI';
+              case WETH:
+                return 'WETH';
+              case USDC:
+                return 'USDC';
+              case USDT:
+                return 'USDT';
+              default:
+                return '';
+            }
+          })();
+          const newDoc = await addDoc(tradesRef, {
             // eslint-disable-next-line camelcase
             token_address: pool.token0.id,
             name: pool.token0.name,
             symbol: pool.token0.symbol,
-            pool: pool.pool,
-            users: [user.data.uid],
+            pool: pool.address,
+            // eslint-disable-next-line camelcase
+            swap_token_address: swapPair,
+            // eslint-disable-next-line camelcase
+            swap_token_symbol: swapToken,
+            user: user.data.uid,
             links: [
               `https://www.dextools.io/app/en/ether/pair-explorer/${pool.address}`,
               `https://etherscan.io/token/${pool.token0.id}`,
@@ -134,23 +170,20 @@ const useTradeForm = () => {
           });
           assetDocId = newDoc.id;
         } else {
-          assetDocId = asset[0].id;
-          const holders = asset[0].data().users;
-          if (holders.indexOf(user.data.uid) === -1) {
-            const newHolders = [...holders, user.data.uid];
-            const assetDoc = doc(db, 'assets', assetDocId);
-            await updateDoc(assetDoc, { users: newHolders });
-          }
+          assetDocId = trades[0].id;
         }
-        const transactionsRef = collection(db, `assets/${assetDocId}/transactions`);
+        const transactionsRef = collection(db, `trades/${assetDocId}/transactions`);
         await addDoc(transactionsRef, {
           date: date,
-          user: user.data.uid,
-          price: price,
           amount: amount,
+          price: (swapAmount / amount) * swapPrice,
           fee: fee,
           // eslint-disable-next-line camelcase
-          total_price_usd: priceUSD,
+          swap_amount: swapAmount,
+          // eslint-disable-next-line camelcase
+          swap_price: swapPrice,
+          // eslint-disable-next-line camelcase
+          price_usd: swapAmount * swapPrice,
           // eslint-disable-next-line camelcase
           is_buy: buy
         });
@@ -166,16 +199,20 @@ const useTradeForm = () => {
               isFilled: Boolean(pool?.address)
             },
             {
-              field: 'Price',
-              isFilled: Boolean(price)
+              field: 'Swap Pair',
+              isFilled: Boolean(swapPair)
+            },
+            {
+              field: 'Swap Price',
+              isFilled: Boolean(swapPrice)
             },
             {
               field: 'Amount',
               isFilled: Boolean(amount)
             },
             {
-              field: 'Price USD',
-              isFilled: Boolean(priceUSD)
+              field: 'Swap Amount',
+              isFilled: Boolean(swapAmount)
             },
             {
               field: 'Transaction Fee',
@@ -206,9 +243,9 @@ const useTradeForm = () => {
   };
 
   const removeAsset = async (id) => {
-    const docRef = doc(db, 'assets', id);
-    const asset = await getDoc(docRef);
-    const currentUsers = [...asset.data().users];
+    const docRef = doc(db, 'trades', id);
+    const trade = await getDoc(docRef);
+    const currentUsers = [...trade.data().users];
     const newUsers = currentUsers.filter((u) => u !== user.data.uid);
     await updateDoc(docRef, {
       users: newUsers
@@ -218,23 +255,25 @@ const useTradeForm = () => {
   return {
     buy,
     pair,
+    swapPair,
     date,
     amount,
-    price,
+    swapPrice,
     fee,
-    priceUSD,
+    swapAmount,
     loading,
     error,
-    find,
+    disableSearch,
     setBuy,
-    setFind,
+    setDisableSearch,
     resetErrorAlert,
     handleDateChange,
     setAmount,
-    setPrice,
+    setSwapPrice,
     setFee,
-    setPriceUSD,
+    setSwapAmount,
     getTokenData,
+    getSwapData,
     addTransaction,
     removeAsset,
     resetForm

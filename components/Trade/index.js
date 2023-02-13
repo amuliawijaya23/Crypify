@@ -10,28 +10,22 @@ import {
   TableHead,
   TableRow,
   IconButton,
-  Tooltip,
   Collapse,
   Link,
   Popover,
   List,
   ListItem,
   ListItemButton,
-  ListItemText,
-  ListItemIcon
+  ListItemText
 } from '@mui/material';
-import ShowChartIcon from '@mui/icons-material/ShowChart';
-import DataArrayIcon from '@mui/icons-material/DataArray';
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
-import AddIcon from '@mui/icons-material/Add';
-import RemooveIcon from '@mui/icons-material/Remove';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import DeleteIcon from '@mui/icons-material/Delete';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 import fromUnixTime from 'date-fns/fromUnixTime';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+
+import { NumericFormat } from 'react-number-format';
 
 const Trade = ({ asset, index, onBuy, onSell, onRemove }) => {
   const [open, setOpen] = useState(false);
@@ -73,6 +67,9 @@ const Trade = ({ asset, index, onBuy, onSell, onRemove }) => {
             })}
         </TableCell>
         <TableCell align='left' padding='normal'>
+          {asset.swap_token_symbol}
+        </TableCell>
+        <TableCell align='left' padding='normal'>
           {asset.symbol}
         </TableCell>
         <TableCell align='left' padding='normal'>
@@ -91,6 +88,11 @@ const Trade = ({ asset, index, onBuy, onSell, onRemove }) => {
             onClose={() => setMenu(null)}
             anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}>
             <List>
+              <ListItem disablePadding>
+                <ListItemButton onClick={handleOnClickBuy}>
+                  <ListItemText primary='Buy' primaryTypographyProps={{ variant: 'body2' }} />
+                </ListItemButton>
+              </ListItem>
               <ListItem disablePadding>
                 <ListItemButton onClick={handleOnClickSell}>
                   <ListItemText primary='Sell' primaryTypographyProps={{ variant: 'body2' }} />
@@ -133,7 +135,7 @@ const Trade = ({ asset, index, onBuy, onSell, onRemove }) => {
                 </Link>
               </ListItem>
               <ListItem disablePadding>
-                <ListItemButton onClick={handleOnClickBuy}>
+                <ListItemButton onClick={handleOnClickRemove}>
                   <ListItemText primary='Remove' primaryTypographyProps={{ variant: 'body2' }} />
                 </ListItemButton>
               </ListItem>
@@ -164,6 +166,12 @@ const Trade = ({ asset, index, onBuy, onSell, onRemove }) => {
                       <b>Price</b>
                     </TableCell>
                     <TableCell>
+                      <b>Swap Amount</b>
+                    </TableCell>
+                    <TableCell>
+                      <b>Swap Price</b>
+                    </TableCell>
+                    <TableCell>
                       <b>Fee</b>
                     </TableCell>
                     <TableCell align='right'>
@@ -180,8 +188,12 @@ const Trade = ({ asset, index, onBuy, onSell, onRemove }) => {
                       <TableCell>{t.is_buy ? 'Buy' : 'Sell'}</TableCell>
                       <TableCell>{t.amount}</TableCell>
                       <TableCell>{t.price}</TableCell>
+                      <TableCell>
+                        {t.swap_amount} {asset.swap_token_symbol}
+                      </TableCell>
+                      <TableCell>{t.swap_price}</TableCell>
                       <TableCell>{t.fee}</TableCell>
-                      <TableCell align='right'>{t.total_price_usd}</TableCell>
+                      <TableCell align='right'>{t.price_usd}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

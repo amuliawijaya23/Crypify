@@ -79,13 +79,7 @@ export default async function handler(req, res) {
       if (data.pool) {
         const tokenAddress = data.token0.id;
 
-        if (
-          tokenAddress === WETH ||
-          tokenAddress === USDC ||
-          tokenAddress === USDT ||
-          tokenAddress === DAI ||
-          address === DAIWETHPAIR
-        ) {
+        if (tokenAddress === WETH || tokenAddress === USDC || address === DAIWETHPAIR) {
           const baseTokenData = { ...data.token0 };
           data.token0 = { ...data.token1 };
           data.token1 = { ...baseTokenData };

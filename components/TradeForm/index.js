@@ -16,7 +16,11 @@ import {
   Box,
   CircularProgress,
   LinearProgress,
-  Snackbar
+  Snackbar,
+  FormControl,
+  Select,
+  InputLabel,
+  MenuItem
 } from '@mui/material';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -35,27 +39,38 @@ const LOADING = 'LOADING';
 const TradeForm = ({
   open,
   handleClose,
-  find,
+  disableSearch,
   buy,
-  pair,
   date,
+  pair,
+  swapPair,
   amount,
+  swapAmount,
   price,
+  swapPrice,
   fee,
-  priceUSD,
   loading,
   error,
   resetErrorAlert,
   handleDateChange,
   setAmount,
-  setPrice,
+  setSwapAmount,
+  setSwapPrice,
   setFee,
-  setPriceUSD,
   getTokenData,
+  getSwapData,
   addTransaction,
   resetForm
 }) => {
   const pool = useSelector((state) => state.pool.value.profile);
+  const trades = useSelector((state) => state.trades.value);
+  let currentAmount = 0;
+
+  if (!buy) {
+    const index = trades.assets.map((a) => a.pool).indexOf(pair);
+    const id = trades.assets[index].id;
+    currentAmount = trades.transactions.find((t) => t.asset_id === id);
+  }
 
   const [mode, setMode] = useState(buy ? BUY : SELL);
 
@@ -114,7 +129,7 @@ const TradeForm = ({
         {(mode === BUY || mode === SELL) && (
           <>
             <DialogTitle>
-              {find
+              {disableSearch
                 ? `${mode[0]}${mode.toLowerCase().substring(1)} ${pool?.token0?.symbol || 'Token'}`
                 : 'Create New Transaction'}
             </DialogTitle>
@@ -136,6 +151,62 @@ const TradeForm = ({
                   </LocalizationProvider>
                 </Grid>
                 <Grid item xs={12}>
+                  <FormControl margin='dense' size='small' sx={{ width: 150 }}>
+                    <InputLabel id='swap-select-label'>Swap Token</InputLabel>
+                    <Select
+                      labelId='swap-select-label'
+                      id='swap-select'
+                      value={swapPair}
+                      onChange={(e) => getSwapData(e.target.value)}
+                      label='Swap Coin'>
+                      <MenuItem value={'0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'}>USDC</MenuItem>
+                      <MenuItem value={'0xdac17f958d2ee523a2206206994597c13d831ec7'}>USDT</MenuItem>
+                      <MenuItem value={'0x6b175474e89094c44da98b954eedeac495271d0f'}>DAI</MenuItem>
+                      <MenuItem value={'0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'}>WETH</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={6}>
+                  <NumericFormat
+                    value={swapPrice}
+                    decimalScale={10}
+                    prefix={'$ '}
+                    thousandSeparator
+                    fullWidth
+                    label='Swap Price'
+                    size='small'
+                    displayType='input'
+                    margin='dense'
+                    variant='outlined'
+                    sx={{ my: 1 }}
+                    customInput={TextField}
+                    onValueChange={({ formattedValue, value, floatValue }) => {
+                      setSwapPrice(floatValue);
+                    }}
+                    error={error && !swapPrice ? true : false}
+                    helperText={error && !swapPrice ? `Enter the price of the token` : ''}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <NumericFormat
+                    value={swapAmount}
+                    decimalScale={10}
+                    thousandSeparator
+                    fullWidth
+                    label='Swap Amount'
+                    size='small'
+                    margin='dense'
+                    variant='outlined'
+                    sx={{ my: 1 }}
+                    customInput={TextField}
+                    onValueChange={({ formattedValue, value, floatValue }) => {
+                      setSwapAmount(floatValue);
+                    }}
+                    error={error && !swapAmount ? true : false}
+                    helperText={error && !swapAmount ? `Enter transaction value in USD` : ''}
+                  />
+                </Grid>
+                <Grid item xs={12}>
                   <DialogContentText variant='body2' sx={{ p: 1 }}>
                     Enter pair address to fetch Token information. If you are unable to find your
                     token, it is currently not supported.
@@ -155,7 +226,7 @@ const TradeForm = ({
                     helperText={
                       error && (!pair || !pool?.address) ? 'Enter a valid pair address' : ''
                     }
-                    disabled={find}
+                    disabled={disableSearch}
                   />
                   {pair && (
                     <>
@@ -197,45 +268,8 @@ const TradeForm = ({
                     error={error && !amount ? true : false}
                     helperText={error && !amount ? `Enter the amount of token` : ''}
                   />
-                  <NumericFormat
-                    value={price}
-                    decimalScale={10}
-                    prefix={'$ '}
-                    thousandSeparator
-                    fullWidth
-                    label='Price'
-                    size='small'
-                    displayType='input'
-                    margin='dense'
-                    variant='outlined'
-                    sx={{ my: 1 }}
-                    customInput={TextField}
-                    onValueChange={({ formattedValue, value, floatValue }) => {
-                      setPrice(floatValue);
-                    }}
-                    error={error && !price ? true : false}
-                    helperText={error && !price ? `Enter the price of the token` : ''}
-                  />
                 </Grid>
                 <Grid item xs={6}>
-                  <NumericFormat
-                    value={priceUSD}
-                    decimalScale={10}
-                    prefix={'$ '}
-                    thousandSeparator
-                    fullWidth
-                    label='Price USD'
-                    size='small'
-                    margin='dense'
-                    variant='outlined'
-                    sx={{ my: 1 }}
-                    customInput={TextField}
-                    onValueChange={({ formattedValue, value, floatValue }) => {
-                      setPriceUSD(floatValue);
-                    }}
-                    error={error && !priceUSD ? true : false}
-                    helperText={error && !priceUSD ? `Enter transaction value in USD` : ''}
-                  />
                   <NumericFormat
                     label='Transaction Fee'
                     decimalScale={10}
@@ -287,7 +321,7 @@ const TradeForm = ({
                   <br />
                   Price: {price}
                   <br />
-                  Total Price in USD: {priceUSD}
+                  Total Price in USD: {swapAmount}
                   <br />
                   Fee: {fee}
                 </Typography>

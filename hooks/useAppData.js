@@ -17,29 +17,30 @@ const useAppData = () => {
   const getTradingData = useCallback(
     async (user) => {
       setLoading(true);
-      const assetsRef = collection(db, 'assets');
-      onSnapshot(assetsRef, (snapshot) => {
-        const assets = snapshot.docs.map((doc) => ({
+      const tradesRef = collection(db, 'trades');
+      const tradesQuery = query(tradesRef, where('user', '==', user));
+      onSnapshot(tradesQuery, (snapshot) => {
+        const trades = snapshot.docs.map((doc) => ({
           ...doc.data(),
           id: doc.id,
           // eslint-disable-next-line camelcase
           date_added: doc.data().date_added.seconds
         }));
-        const myAssets = assets.filter((asset) => asset.users.indexOf(user) !== -1);
-        dispatch(setAssets(myAssets));
-        const assetIds = myAssets.map((asset) => asset.id);
-        for (const id of assetIds) {
-          const transactionsRef = collection(db, `assets/${id}/transactions`);
+        // const myTrades = trades.filter((asset) => asset.users.indexOf(user) !== -1);
+        dispatch(setAssets(trades));
+        const tradeIds = trades.map((t) => t.id);
+        for (const id of tradeIds) {
+          const transactionsRef = collection(db, `trades/${id}/transactions`);
           onSnapshot(transactionsRef, (snapshot) => {
-            const transactions = snapshot.docs.map((t) => ({
-              ...t.data(),
-              id: t.id,
-              date: t.data().date.seconds
-            }));
-            const myTransactions = transactions
-              .filter((t) => t.user === user)
+            const transactions = snapshot.docs
+              .map((t) => ({
+                ...t.data(),
+                id: t.id,
+                date: t.data().date.seconds
+              }))
               .sort((a, b) => b.date - a.date);
-            dispatch(setAssetTransactions({ id: id, transactions: myTransactions }));
+
+            dispatch(setAssetTransactions({ id: id, transactions: transactions }));
             setLoading(false);
           });
         }

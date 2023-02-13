@@ -36,24 +36,27 @@ import { getComparator, stableSort } from '../../helpers/sortTable';
 const Trades = () => {
   const {
     buy,
-    pair,
     date,
+    pair,
+    swapPair,
     amount,
+    swapAmount,
     price,
+    swapPrice,
     fee,
-    priceUSD,
     loading,
     error,
-    find,
+    disableSearch,
     setBuy,
-    setFind,
+    setDisableSearch,
     resetErrorAlert,
     handleDateChange,
     setAmount,
-    setPrice,
+    setSwapPrice,
     setFee,
-    setPriceUSD,
+    setSwapAmount,
     getTokenData,
+    getSwapData,
     addTransaction,
     removeAsset,
     resetForm
@@ -94,14 +97,14 @@ const Trades = () => {
   const handleBuyAsset = (address) => {
     setBuy(true);
     setOpen(true);
-    setFind(true);
+    setDisableSearch(true);
     getTokenData(address);
   };
 
   const handleSellAsset = (address) => {
     setBuy(false);
     setOpen(true);
-    setFind(true);
+    setDisableSearch(true);
     getTokenData(address);
   };
 
@@ -123,8 +126,8 @@ const Trades = () => {
           key={`trade-${index}`}
           asset={asset}
           index={index}
-          onBuy={() => handleBuyAsset(asset.address)}
-          onSell={() => handleSellAsset(asset.address)}
+          onBuy={() => handleBuyAsset(asset.pool)}
+          onSell={() => handleSellAsset(asset.pool)}
           onRemove={() => removeAsset(asset.id)}
         />
       );
@@ -133,26 +136,29 @@ const Trades = () => {
   return (
     <>
       <TradeForm
-        buy={buy}
         open={open}
-        pair={pair}
+        disableSearch={disableSearch}
+        buy={buy}
         date={date}
+        pair={pair}
+        swapPair={swapPair}
         amount={amount}
+        swapAmount={swapAmount}
         price={price}
+        swapPrice={swapPrice}
         fee={fee}
-        priceUSD={priceUSD}
         loading={loading}
         error={error}
-        find={find}
-        resetErrorAlert={resetErrorAlert}
         handleDateChange={handleDateChange}
         setAmount={setAmount}
-        setPrice={setPrice}
+        setSwapAmount={setSwapAmount}
+        setSwapPrice={setSwapPrice}
         setFee={setFee}
-        setPriceUSD={setPriceUSD}
         getTokenData={getTokenData}
+        getSwapData={getSwapData}
         addTransaction={addTransaction}
         resetForm={resetForm}
+        resetErrorAlert={resetErrorAlert}
         handleClose={() => setOpen(false)}
       />
       <Grid container>
@@ -206,7 +212,7 @@ const Trades = () => {
               <TableHead>
                 <TableRow>
                   <TableCell />
-                  {['last_transaction', 'buy_date', 'token', 'amount', 'profit'].map(
+                  {['last_transaction', 'buy_date', 'Swap Token', 'token', 'amount', 'profit'].map(
                     (column, i) => (
                       <TableCell
                         key={column}
